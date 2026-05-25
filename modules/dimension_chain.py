@@ -211,6 +211,11 @@ def generate_html_report(components, result):
 
 def export_to_excel(components, result):
     """导出计算结果到Excel"""
+    try:
+        import openpyxl
+    except ImportError:
+        return None
+
     output = BytesIO()
 
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
@@ -370,13 +375,16 @@ def render_dimension_chain_tab():
         with export_col2:
             # 导出Excel
             excel_data = export_to_excel(components, result)
-            st.download_button(
-                "📊 导出Excel",
-                data=excel_data,
-                file_name="尺寸链计算结果.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True,
-            )
+            if excel_data is not None:
+                st.download_button(
+                    "📊 导出Excel",
+                    data=excel_data,
+                    file_name="尺寸链计算结果.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True,
+                )
+            else:
+                st.warning("Excel导出不可用（缺少openpyxl依赖）")
         with export_col3:
             # 复制文本
             copy_text = (

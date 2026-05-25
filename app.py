@@ -2351,7 +2351,7 @@ def generate_gdandt_annotation_svg(item_name, tol_value_um, grade, param_value):
     
     # SVG 参数
     svg_width = 520
-    svg_height = 220
+    svg_height = 250
     
     svg = [f'<svg width="{svg_width}" height="{svg_height}" xmlns="http://www.w3.org/2000/svg">']
     svg.append('<style>')
@@ -2371,13 +2371,20 @@ def generate_gdandt_annotation_svg(item_name, tol_value_um, grade, param_value):
     part_w = 180
     part_h = 80
     
-    # 零件外形（矩形代表零件截面）
-    svg.append(f'<rect x="{part_x}" y="{part_y}" width="{part_w}" height="{part_h}" fill="#f5f5f5" stroke="#333" stroke-width="2" rx="3"/>')
+    # 零件外形 - 分为两段：左段(被测要素) + 右段(基准要素)
+    # 左段：被测要素
+    left_part_w = part_w * 0.45
+    svg.append(f'<rect x="{part_x}" y="{part_y}" width="{left_part_w}" height="{part_h}" fill="#e3f2fd" stroke="#333" stroke-width="2" rx="2"/>')
+    
+    # 右段：基准要素（稍大一些，表示基准轴颈）
+    right_part_x = part_x + left_part_w
+    right_part_w = part_w * 0.55
+    svg.append(f'<rect x="{right_part_x}" y="{part_y - 5}" width="{right_part_w}" height="{part_h + 10}" fill="#ffebee" stroke="#333" stroke-width="2" rx="2"/>')
     
     # 中心线
     svg.append(f'<line x1="{part_x - 20}" y1="{part_y + part_h // 2}" x2="{part_x + part_w + 20}" y2="{part_y + part_h // 2}" class="center"/>')
     
-    # 被测要素指示箭头（指向零件轮廓）
+    # 被测要素指示箭头（指向左段零件）
     arrow_target_y = part_y + part_h // 2
     if info["arrow_to"] == "轮廓线":
         # 箭头指向轮廓线
@@ -2389,6 +2396,9 @@ def generate_gdandt_annotation_svg(item_name, tol_value_um, grade, param_value):
         svg.append(f'<line x1="{part_x + 30}" y1="{arrow_target_y - 15}" x2="{part_x + 30}" y2="{arrow_target_y - 8}" stroke="#1565c0" stroke-width="1.5"/>')
         svg.append(f'<polygon points="{part_x + 30},{arrow_target_y - 8} {part_x + 26},{arrow_target_y - 14} {part_x + 34},{arrow_target_y - 14}" fill="#1565c0"/>')
         leader_end_y = arrow_target_y - 15
+    
+    # 被测要素标注
+    svg.append(f'<text x="{part_x + left_part_w // 2}" y="{part_y + part_h + 15}" text-anchor="middle" class="desc-text">被测要素</text>')
     
     # ========== 形位公差框格（左侧）==========
     frame_x = 30
@@ -2408,10 +2418,10 @@ def generate_gdandt_annotation_svg(item_name, tol_value_um, grade, param_value):
     svg.append(f'<line x1="{frame_x + cell_w}" y1="{frame_y}" x2="{frame_x + cell_w}" y2="{frame_y + cell_h}" stroke="#333" stroke-width="1"/>')
     svg.append(f'<line x1="{frame_x + cell_w * 2}" y1="{frame_y}" x2="{frame_x + cell_w * 2}" y2="{frame_y + cell_h}" stroke="#333" stroke-width="1"/>')
     
-    # 第一格：形位公差符号
+    # 第一格：形位公差符号（放大显示）
     symbol_cx = frame_x + cell_w // 2
     symbol_cy = frame_y + cell_h // 2 + 1
-    svg.append(f'<text x="{symbol_cx}" y="{symbol_cy + 5}" text-anchor="middle" font-size="18" fill="#1565c0">{info["symbol"]}</text>')
+    svg.append(f'<text x="{symbol_cx}" y="{symbol_cy + 6}" text-anchor="middle" font-size="24" font-weight="bold" fill="#1565c0">{info["symbol"]}</text>')
     
     # 第二格：公差值
     val_cx = frame_x + cell_w + cell_w // 2
@@ -2435,23 +2445,24 @@ def generate_gdandt_annotation_svg(item_name, tol_value_um, grade, param_value):
     
     # ========== 基准符号（如果有）==========
     if has_datum:
-        # 基准三角形和字母框
-        datum_x = part_x + part_w - 30
-        datum_y = part_y + part_h + 15
+        # 基准符号标注在基准要素上（右段零件）
+        datum_x = right_part_x + right_part_w // 2
+        datum_y = part_y - 5  # 基准要素顶部
         
-        # 基准字母框
-        svg.append(f'<rect x="{datum_x - 12}" y="{datum_y}" width="24" height="20" fill="white" stroke="#d32f2f" stroke-width="1.5"/>')
-        svg.append(f'<text x="{datum_x}" y="{datum_y + 15}" text-anchor="middle" class="datum-text">A</text>')
+        # 基准指引线（从零件顶部向上）
+        svg.append(f'<line x1="{datum_x}" y1="{datum_y}" x2="{datum_x}" y2="{datum_y - 25}" stroke="#d32f2f" stroke-width="1.2"/>')
         
-        # 基准三角形
-        tri_y = datum_y + 20
-        svg.append(f'<polygon points="{datum_x - 8},{tri_y} {datum_x + 8},{tri_y} {datum_x},{tri_y + 12}" fill="#d32f2f" stroke="#d32f2f" stroke-width="1"/>')
+        # 基准三角形（倒三角形，指向基准要素）
+        tri_top_y = datum_y - 25
+        svg.append(f'<polygon points="{datum_x - 8},{tri_top_y} {datum_x + 8},{tri_top_y} {datum_x},{tri_top_y + 10}" fill="#d32f2f" stroke="#d32f2f" stroke-width="1"/>')
         
-        # 基准指引线（从三角形到零件）
-        svg.append(f'<line x1="{datum_x}" y1="{tri_y + 12}" x2="{datum_x}" y2="{part_y + part_h}" stroke="#d32f2f" stroke-width="1.2"/>')
+        # 基准字母框（在三角形上方）
+        box_y = tri_top_y - 22
+        svg.append(f'<rect x="{datum_x - 12}" y="{box_y}" width="24" height="18" fill="white" stroke="#d32f2f" stroke-width="1.5"/>')
+        svg.append(f'<text x="{datum_x}" y="{box_y + 14}" text-anchor="middle" font-size="13" font-weight="bold" fill="#d32f2f">A</text>')
         
-        # 基准标注说明
-        svg.append(f'<text x="{datum_x}" y="{tri_y + 28}" text-anchor="middle" class="desc-text">基准A</text>')
+        # 基准要素标注
+        svg.append(f'<text x="{datum_x}" y="{part_y + part_h + 15}" text-anchor="middle" class="desc-text" fill="#d32f2f">基准要素A</text>')
     
     # ========== 标注说明文字 ==========
     desc_y = svg_height - 60
@@ -2461,9 +2472,9 @@ def generate_gdandt_annotation_svg(item_name, tol_value_um, grade, param_value):
     
     # 标注说明
     svg.append(f'<text x="{frame_x}" y="{desc_y}" class="label">📌 {info["desc"]}</text>')
-    svg.append(f'<text x="{frame_x}" y="{desc_y + 16}" class="label">📌 指引线箭头指向{info["arrow_to"]}</text>')
+    svg.append(f'<text x="{frame_x}" y="{desc_y + 16}" class="label">📌 指引线箭头指向被测要素({info["arrow_to"]})</text>')
     if has_datum:
-        svg.append(f'<text x="{frame_x}" y="{desc_y + 32}" class="label">📌 基准A标注在被测要素的基准面上</text>')
+        svg.append(f'<text x="{frame_x}" y="{desc_y + 32}" class="label">📌 基准A标注在基准要素上（红色区域）</text>')
     
     # 公差值说明
     svg.append(f'<text x="{frame_x + total_frame_w + 10}" y="{frame_y + cell_h + 20}" class="label">公差值: {tol_value_um} μm = {tol_mm_str} mm</text>')

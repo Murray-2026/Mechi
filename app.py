@@ -2311,41 +2311,48 @@ def generate_gdandt_annotation_svg(item_name, tol_value_um, grade, param_value):
     包含: 形位公差框格(符号+公差值+基准)、指引线、箭头、基准符号、零件简图
     """
     # 形位公差符号定义 (Unicode/自定义SVG路径)
+    # needs_diameter: 是否需要在公差值前加直径符号φ（同轴度、对称度、位置度需要）
     symbol_map = {
-        "圆度": {"symbol": "○", "svg_path": None, "has_datum": False,
+        "圆度": {"symbol": "○", "svg_path": None, "has_datum": False, "needs_diameter": False,
                  "desc": "被测要素为圆柱面/球面的横截面", "arrow_to": "轮廓线"},
-        "圆柱度": {"symbol": "⌭", "svg_path": None, "has_datum": False,
+        "圆柱度": {"symbol": "⌭", "svg_path": None, "has_datum": False, "needs_diameter": False,
                    "desc": "被测要素为圆柱面", "arrow_to": "尺寸线"},
-        "直线度": {"symbol": "—", "svg_path": None, "has_datum": False,
+        "直线度": {"symbol": "—", "svg_path": None, "has_datum": False, "needs_diameter": False,
                    "desc": "被测要素为轴线或表面素线", "arrow_to": "尺寸线"},
-        "平面度": {"symbol": "▱", "svg_path": None, "has_datum": False,
+        "平面度": {"symbol": "▱", "svg_path": None, "has_datum": False, "needs_diameter": False,
                    "desc": "被测要素为平面表面", "arrow_to": "轮廓线"},
-        "平行度": {"symbol": "∥", "svg_path": None, "has_datum": True,
+        "平行度": {"symbol": "∥", "svg_path": None, "has_datum": True, "needs_diameter": False,
                    "desc": "被测要素相对于基准平行", "arrow_to": "尺寸线"},
-        "垂直度": {"symbol": "⊥", "svg_path": None, "has_datum": True,
+        "垂直度": {"symbol": "⊥", "svg_path": None, "has_datum": True, "needs_diameter": False,
                    "desc": "被测要素相对于基准垂直", "arrow_to": "轮廓线"},
-        "同轴度": {"symbol": "◎", "svg_path": None, "has_datum": True,
+        "同轴度": {"symbol": "◎", "svg_path": None, "has_datum": True, "needs_diameter": True,
                    "desc": "被测轴线相对于基准轴线同轴", "arrow_to": "尺寸线"},
-        "对称度": {"symbol": "⌢", "svg_path": None, "has_datum": True,
+        "对称度": {"symbol": "⌢", "svg_path": None, "has_datum": True, "needs_diameter": True,
                    "desc": "被测中心面相对于基准中心面对称", "arrow_to": "尺寸线"},
-        "圆跳动": {"symbol": "↗", "svg_path": None, "has_datum": True,
+        "圆跳动": {"symbol": "↗", "svg_path": None, "has_datum": True, "needs_diameter": False,
                    "desc": "被测要素相对于基准的圆跳动", "arrow_to": "轮廓线"},
-        "全跳动": {"symbol": "⇗", "svg_path": None, "has_datum": True,
+        "全跳动": {"symbol": "⇗", "svg_path": None, "has_datum": True, "needs_diameter": False,
                    "desc": "被测要素相对于基准的全跳动", "arrow_to": "轮廓线"},
-        "位置度": {"symbol": "⌖", "svg_path": None, "has_datum": True,
+        "位置度": {"symbol": "⌖", "svg_path": None, "has_datum": True, "needs_diameter": True,
                    "desc": "被测要素相对于基准的位置", "arrow_to": "尺寸线"},
-        "倾斜度": {"symbol": "∠", "svg_path": None, "has_datum": True,
+        "倾斜度": {"symbol": "∠", "svg_path": None, "has_datum": True, "needs_diameter": False,
                    "desc": "被测要素相对于基准倾斜", "arrow_to": "轮廓线"},
     }
     
-    info = symbol_map.get(item_name, {"symbol": "?", "svg_path": None, "has_datum": True,
+    info = symbol_map.get(item_name, {"symbol": "?", "svg_path": None, "has_datum": True, "needs_diameter": False,
                                        "desc": "被测要素", "arrow_to": "轮廓线"})
     
-    # 将公差值从微米转换为毫米显示
+    # 将公差值从微米转换为毫米显示，并根据需要添加直径符号φ
     if tol_value_um >= 1000:
         tol_mm_str = f"{tol_value_um / 1000:.1f}"
     else:
         tol_mm_str = f"{tol_value_um / 1000:.3f}"
+    
+    # 同轴度、对称度、位置度需要加直径符号φ
+    if info.get("needs_diameter", False):
+        tol_display = f"φ{tol_mm_str}"
+    else:
+        tol_display = tol_mm_str
     
     has_datum = info["has_datum"]
     
@@ -2423,9 +2430,9 @@ def generate_gdandt_annotation_svg(item_name, tol_value_um, grade, param_value):
     symbol_cy = frame_y + cell_h // 2 + 1
     svg.append(f'<text x="{symbol_cx}" y="{symbol_cy + 6}" text-anchor="middle" font-size="24" font-weight="bold" fill="#1565c0">{info["symbol"]}</text>')
     
-    # 第二格：公差值
+    # 第二格：公差值（同轴度、对称度、位置度需加直径符号φ）
     val_cx = frame_x + cell_w + cell_w // 2
-    svg.append(f'<text x="{val_cx}" y="{symbol_cy + 5}" text-anchor="middle" class="frame-text">{tol_mm_str}</text>')
+    svg.append(f'<text x="{val_cx}" y="{symbol_cy + 5}" text-anchor="middle" class="frame-text">{tol_display}</text>')
     
     # 第三格：基准字母（如果有）
     if has_datum:
@@ -2477,7 +2484,10 @@ def generate_gdandt_annotation_svg(item_name, tol_value_um, grade, param_value):
         svg.append(f'<text x="{frame_x}" y="{desc_y + 32}" class="label">📌 基准A标注在基准要素上（红色区域）</text>')
     
     # 公差值说明
-    svg.append(f'<text x="{frame_x + total_frame_w + 10}" y="{frame_y + cell_h + 20}" class="label">公差值: {tol_value_um} μm = {tol_mm_str} mm</text>')
+    if info.get("needs_diameter", False):
+        svg.append(f'<text x="{frame_x + total_frame_w + 10}" y="{frame_y + cell_h + 20}" class="label">公差值: φ{tol_mm_str} mm (直径符号φ表示公差带为圆柱面)</text>')
+    else:
+        svg.append(f'<text x="{frame_x + total_frame_w + 10}" y="{frame_y + cell_h + 20}" class="label">公差值: {tol_mm_str} mm ({tol_value_um} μm)</text>')
     
     # 标准参考
     svg.append(f'<text x="{svg_width // 2}" y="{svg_height - 8}" text-anchor="middle" class="desc-text">标注依据: GB/T 1182-2018 (ISO 1101)</text>')

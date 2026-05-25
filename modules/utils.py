@@ -590,12 +590,15 @@ def calculate_dimension_chain(components):
     contributions = []
     for comp in components:
         comp_tol = comp["upper_dev"] - comp["lower_dev"]
+        contribution_val = comp_tol  # 对封闭环公差的贡献 = 该环公差值
         contributions.append({
             "name": comp["name"],
             "ring_type": comp["ring_type"],
             "basic_size": comp["basic_size"],
+            "upper_dev": comp["upper_dev"],
+            "lower_dev": comp["lower_dev"],
             "tolerance": comp_tol,
-            "contribution": "增加封闭环公差" if comp["ring_type"] == "增环" else "增加封闭环公差",
+            "contribution": contribution_val,
         })
 
     return {

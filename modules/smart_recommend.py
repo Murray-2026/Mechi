@@ -133,7 +133,7 @@ def render_smart_recommend_tab():
 
                 result = calculate_fit_properties(
                     hole_tol["ES"], hole_tol["EI"],
-                    shaft_tol["es"], shaft_tol["ei"]
+                    shaft_tol["ES"], shaft_tol["EI"]
                 )
 
                 # 结果展示
@@ -256,7 +256,7 @@ def render_smart_recommend_tab():
                     '<div style="background:white;border:1px solid #e0e0e0;border-radius:10px;'
                     'padding:16px;margin-bottom:16px;text-align:center;">'
                     '<div style="font-size:14px;font-weight:bold;color:#374151;margin-bottom:12px;">📐 结构示意图</div>'
-                    '""" + case["svg_diagram"] + """'
+                    + case["svg_diagram"] +
                     '</div>'
                 )
                 st.markdown(svg_container, unsafe_allow_html=True)

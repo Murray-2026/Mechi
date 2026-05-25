@@ -3432,87 +3432,66 @@ def render_geometric_tolerance_tab():
             else:
                 grade_desc = "一般精度"
             
-            # 创建卡片式布局
+            # 创建卡片式布局 - 使用字符串拼接避免花括号冲突
             with st.container():
-                # 卡片头部 - 使用 .format() 避免 f-string 花括号冲突
-                header_html = """
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                            padding: 12px 16px; border-radius: 8px 8px 0 0; margin-top: 10px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: white; font-size: 18px; font-weight: bold;">
-                            {idx_num}. {item}
-                        </span>
-                        <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; 
-                                   border-radius: 12px; color: white; font-size: 12px;">
-                            {badge}
-                        </span>
-                    </div>
-                </div>
-                """.format(idx_num=idx + 1, item=item_name, badge=tol_type_badge)
+                # 卡片头部
+                header_html = (
+                    '<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); '
+                    'padding: 12px 16px; border-radius: 8px 8px 0 0; margin-top: 10px;">'
+                    '<div style="display: flex; justify-content: space-between; align-items: center;">'
+                    '<span style="color: white; font-size: 18px; font-weight: bold;">' +
+                    str(idx + 1) + '. ' + str(item_name) + '</span>'
+                    '<span style="background: rgba(255,255,255,0.2); padding: 4px 12px; '
+                    'border-radius: 12px; color: white; font-size: 12px;">' +
+                    str(tol_type_badge) + '</span></div></div>'
+                )
                 st.markdown(header_html, unsafe_allow_html=True)
                 
-                # 卡片主体 - 使用 .format() 避免 f-string 花括号冲突
+                # 卡片主体 - 使用字符串拼接
                 tol_display_str = str(tol_value) if tol_value else "—"
-                param_info_str = "@ {}mm".format(param_value) if tol_value else "超出查询范围"
+                param_info_str = "@ " + str(param_value) + "mm" if tol_value else "超出查询范围"
                 
-                body_html = """
-                <div style="background: #f8f9fa; padding: 16px; border-radius: 0 0 8px 8px; 
-                            border: 1px solid #e0e0e0; border-top: none;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div style="background: white; padding: 12px; border-radius: 6px; 
-                                    border-left: 4px solid #667eea;">
-                            <div style="color: #666; font-size: 12px; margin-bottom: 4px;">📌 推荐等级</div>
-                            <div style="font-size: 24px; font-weight: bold; color: #333;">
-                                {gmin} ~ {gmax} 级
-                            </div>
-                            <div style="color: #888; font-size: 11px;">{gdesc}</div>
-                        </div>
-                        <div style="background: white; padding: 12px; border-radius: 6px; 
-                                    border-left: 4px solid #48bb78;">
-                            <div style="color: #666; font-size: 12px; margin-bottom: 4px;">📏 公差值（参考）</div>
-                            <div style="font-size: 24px; font-weight: bold; color: #333;">
-                                {tol} μm
-                            </div>
-                            <div style="color: #888; font-size: 11px;">
-                                {pinfo}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: white; padding: 12px; border-radius: 6px; margin-top: 12px; 
-                                border-left: 4px solid #f6ad55;">
-                        <div style="color: #666; font-size: 12px; margin-bottom: 6px;">💡 为什么推荐？</div>
-                        <div style="color: #444; font-size: 13px; line-height: 1.5;">{reason}</div>
-                    </div>
-                    
-                    {app_section}
-                    
-                    <div style="background: #fff3cd; padding: 10px 12px; border-radius: 6px; margin-top: 12px;">
-                        <div style="color: #856404; font-size: 12px;">
-                            <b>📝 标注建议：</b>在零件图上标注 
-                            <b>{item}</b> 公差，等级选用 <b>{gmin}~{gmax}级</b>，
-                            基准标注 <b>📍 A</b>（根据具体位置确定基准要素）
-                        </div>
-                    </div>
-                </div>
-                """
-                
-                if application:
-                    app_section = """
-                    <div style="background: white; padding: 12px; border-radius: 6px; margin-top: 12px; 
-                                border-left: 4px solid #4299e1;">
-                        <div style="color: #666; font-size: 12px; margin-bottom: 6px;">🔧 典型应用</div>
-                        <div style="color: #444; font-size: 13px; line-height: 1.5;">{app}</div>
-                    </div>
-                    """.format(app=application)
-                else:
-                    app_section = ""
-                
-                body_html = body_html.format(
-                    gmin=adj_grade_min, gmax=adj_grade_max, gdesc=grade_desc,
-                    tol=tol_display_str, pinfo=param_info_str,
-                    reason=reason, item=item_name, app_section=app_section
+                # 构建主体HTML
+                body_html = (
+                    '<div style="background: #f8f9fa; padding: 16px; border-radius: 0 0 8px 8px; '
+                    'border: 1px solid #e0e0e0; border-top: none;">'
+                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">'
+                    '<div style="background: white; padding: 12px; border-radius: 6px; '
+                    'border-left: 4px solid #667eea;">'
+                    '<div style="color: #666; font-size: 12px; margin-bottom: 4px;">📌 推荐等级</div>'
+                    '<div style="font-size: 24px; font-weight: bold; color: #333;">' +
+                    str(adj_grade_min) + ' ~ ' + str(adj_grade_max) + ' 级</div>'
+                    '<div style="color: #888; font-size: 11px;">' + str(grade_desc) + '</div></div>'
+                    '<div style="background: white; padding: 12px; border-radius: 6px; '
+                    'border-left: 4px solid #48bb78;">'
+                    '<div style="color: #666; font-size: 12px; margin-bottom: 4px;">📏 公差值（参考）</div>'
+                    '<div style="font-size: 24px; font-weight: bold; color: #333;">' +
+                    tol_display_str + ' μm</div>'
+                    '<div style="color: #888; font-size: 11px;">' + param_info_str + '</div></div></div>'
+                    '<div style="background: white; padding: 12px; border-radius: 6px; margin-top: 12px; '
+                    'border-left: 4px solid #f6ad55;">'
+                    '<div style="color: #666; font-size: 12px; margin-bottom: 6px;">💡 为什么推荐？</div>'
+                    '<div style="color: #444; font-size: 13px; line-height: 1.5;">' + str(reason) + '</div></div>'
                 )
+                
+                # 添加典型应用（如果有）
+                if application:
+                    body_html += (
+                        '<div style="background: white; padding: 12px; border-radius: 6px; margin-top: 12px; '
+                        'border-left: 4px solid #4299e1;">'
+                        '<div style="color: #666; font-size: 12px; margin-bottom: 6px;">🔧 典型应用</div>'
+                        '<div style="color: #444; font-size: 13px; line-height: 1.5;">' + str(application) + '</div></div>'
+                    )
+                
+                # 添加标注建议
+                body_html += (
+                    '<div style="background: #fff3cd; padding: 10px 12px; border-radius: 6px; margin-top: 12px;">'
+                    '<div style="color: #856404; font-size: 12px;">'
+                    '<b>📝 标注建议：</b>在零件图上标注 '
+                    '<b>' + str(item_name) + '</b> 公差，等级选用 <b>' + str(adj_grade_min) + '~' + str(adj_grade_max) + '级</b>，'
+                    '基准标注 <b>📍 A</b>（根据具体位置确定基准要素）</div></div></div>'
+                )
+                
                 st.markdown(body_html, unsafe_allow_html=True)
                 
                 # 标注示例图

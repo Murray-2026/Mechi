@@ -2584,13 +2584,335 @@ def render_geometric_tolerance_tab():
 # 第11节：标准查阅功能
 # ============================================================
 
+def _build_glossary():
+    """构建术语词典：包含术语解释和在标准文档中的含义"""
+    glossary = {
+        # === GB/T 1800.1-2020 术语 ===
+        "标准公差": {
+            "explain": "国家标准（ISO 286体系）规定的、用于确定公差带大小的任一公差值，用 IT（International Tolerance）表示。",
+            "doc_meaning": "在 GB/T 1800.1-2020 中，标准公差是公差带宽度的基础。IT等级从IT01到IT18共20级，数值越大精度越低。标准公差值仅取决于公称尺寸所在的尺寸分段和公差等级，与配合类型无关。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "标准公差数值表 (IT01-IT18)",
+        },
+        "公差等级": {
+            "explain": "确定尺寸精确程度的等级，用数字01、0、1~18表示。数字越小精度越高，公差值越小。",
+            "doc_meaning": "GB/T 1800.1-2020 规定了IT01~IT18共20个公差等级。其中IT01~IT7一般用于配合尺寸，IT8~IT12用于非配合尺寸，IT12~IT18用于未注公差。同一公称尺寸下，IT7的公差约为IT6的1.6倍。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "标准公差数值表 (IT01-IT18)",
+        },
+        "基本偏差": {
+            "explain": "确定公差带相对于零线位置的极限偏差，可以是上偏差或下偏差，一般靠近零线的那个偏差。",
+            "doc_meaning": "在 GB/T 1800.1-2020 中，孔的基本偏差用大写字母A~ZC表示（28个），轴的基本偏差用小写字母a~zc表示（28个）。H为基准孔（下偏差EI=0），h为基准轴（上偏差es=0）。基本偏差决定了公差带相对零线的起始位置。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "基本偏差系列",
+        },
+        "配合": {
+            "explain": "基本尺寸相同的、相互结合的孔和轴公差带之间的关系。",
+            "doc_meaning": "GB/T 1800.1-2020 将配合分为三类：间隙配合（孔>轴，可相对运动）、过渡配合（可能间隙也可能过盈，精确定位）、过盈配合（孔<轴，固定连接）。配合的性质由孔和轴公差带的相对位置决定。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "配合类型",
+        },
+        "间隙配合": {
+            "explain": "具有间隙（含最小间隙等于零）的配合，孔的尺寸减去相配合轴的尺寸之差为正或零。",
+            "doc_meaning": "在标准中，间隙配合的特点是孔的最小极限尺寸大于或等于轴的最大极限尺寸。常用于需要相对运动的配合面，如滑动轴承、导轨等。配合代号中孔的字母在H之前（如H7/f6）或轴字母在h之后。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "配合类型",
+        },
+        "过渡配合": {
+            "explain": "可能具有间隙或过盈的配合，孔的尺寸减去轴的尺寸之差可能为正也可能为负。",
+            "doc_meaning": "过渡配合在装配时可能得到间隙也可能得到过盈，主要用于要求对中良好且易于拆卸的场合，如齿轮与轴的连接、联轴器等。常用配合有H7/k6、H7/js6等。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "配合类型",
+        },
+        "过盈配合": {
+            "explain": "具有过盈（含最小过盈等于零）的配合，孔的尺寸减去相配合轴的尺寸之差为负或零。",
+            "doc_meaning": "过盈配合需要压力机压入或热胀冷缩法装配，装配后孔轴之间无相对运动。常用于永久性连接，如轴承外圈与座孔、齿轮圈与轮毂等。配合代号如H7/p6、H7/s6。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "配合类型",
+        },
+        "基准孔": {
+            "explain": "基本偏差为一定的孔的公差带，与不同基本偏差的轴的公差带形成各种配合的一种制度。",
+            "doc_meaning": "在基孔制中，基准孔的基本偏差为下偏差EI=0，代号为H。基孔制是优先选用的配合制度，因为加工孔比加工轴更困难，采用基孔制可以减少孔加工刀具和量具的规格数量。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "基本偏差系列",
+        },
+        "基准轴": {
+            "explain": "基本偏差为一定的轴的公差带，与不同基本偏差的孔的公差带形成各种配合的一种制度。",
+            "doc_meaning": "在基轴制中，基准轴的基本偏差为上偏差es=0，代号为h。基轴制适用于同一轴上装有不同配合要求的零件，如光轴与多个孔的配合，或使用冷拉钢材不再加工的轴。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "基本偏差系列",
+        },
+        "公称尺寸": {
+            "explain": "设计给定的尺寸，是确定极限尺寸和偏差的基准尺寸。",
+            "doc_meaning": "在 GB/T 1800.1-2020 中，公称尺寸是设计时确定的理想尺寸。公差和偏差均以公称尺寸为基准计算。标准将公称尺寸划分为13个尺寸分段（如0~3mm、3~6mm等），同一分段内的标准公差值相同。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "标准公差数值表 (IT01-IT18)",
+        },
+        "上偏差": {
+            "explain": "最大极限尺寸减去公称尺寸所得的代数差。孔用ES表示，轴用es表示。",
+            "doc_meaning": "上偏差确定了公差带的上边界。对于孔，ES为正值或零；对于轴，es可以为正、负或零。上偏差 = 公称尺寸 + 公差值（当基本偏差为下偏差时）。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "基本偏差系列",
+        },
+        "下偏差": {
+            "explain": "最小极限尺寸减去公称尺寸所得的代数差。孔用EI表示，轴用ei表示。",
+            "doc_meaning": "下偏差确定了公差带的下边界。基准孔H的下偏差EI=0，基准轴h的上偏差es=0。下偏差 = 基本偏差（当基本偏差为下偏差时）。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "基本偏差系列",
+        },
+        "公差带": {
+            "explain": "由代表上偏差和下偏差或最大极限尺寸和最小极限尺寸的两条直线所限定的区域。",
+            "doc_meaning": "公差带由两个要素确定：大小（由公差等级决定）和位置（由基本偏差决定）。在公差带图中，零线代表公称尺寸，公差带相对于零线的位置由基本偏差确定，宽度由标准公差确定。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "基本偏差系列",
+        },
+        "零线": {
+            "explain": "在公差与配合图解中，表示公称尺寸的一条直线，以其为基准确定偏差和公差。",
+            "doc_meaning": "零线是公差带图的基准线，位于零线上方的偏差为正，位于零线下方的偏差为负。零线代表公称尺寸的位置，是判断孔轴配合性质的参考基准。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "基本偏差系列",
+        },
+
+        # === GB/T 1801-2009 术语 ===
+        "优先配合": {
+            "explain": "国家标准中推荐优先选用的配合，是在满足使用要求的前提下减少刀具、量具种类。",
+            "doc_meaning": "GB/T 1801-2009 规定了基孔制和基轴制各13种优先配合。基孔制优先配合包括H11/c11、H9/d9、H8/f7、H7/g6、H7/h6、H7/k6、H7/n6、H7/p6、H7/s6等。设计时应优先选用这些配合以降低制造成本。",
+            "standard": "GB/T 1801-2009",
+            "location": "优先配合推荐",
+        },
+        "常用配合": {
+            "explain": "在一般机械制造中广泛使用的配合，分为基孔制常用配合和基轴制常用配合。",
+            "doc_meaning": "GB/T 1801-2009 规定了基孔制常用配合59种、基轴制常用配合47种。常用配合是在优先配合基础上扩展的，涵盖了大多数常规使用场景。当优先配合不能满足要求时，可从常用配合中选取。",
+            "standard": "GB/T 1801-2009",
+            "location": "常用配合代号",
+        },
+        "基孔制": {
+            "explain": "基本偏差为一定的孔的公差带，与不同基本偏差的轴的公差带形成各种配合的制度。基准孔代号为H。",
+            "doc_meaning": "GB/T 1801-2009 推荐优先采用基孔制配合。因为加工孔通常需要定值刀具（如钻头、铰刀），而加工轴使用通用刀具。采用基孔制可减少孔加工刀具规格，降低成本。基孔制优先配合如H7/f6、H7/k6、H7/p6等。",
+            "standard": "GB/T 1801-2009",
+            "location": "优先配合推荐",
+        },
+        "基轴制": {
+            "explain": "基本偏差为一定的轴的公差带，与不同基本偏差的孔的公差带形成各种配合的制度。基准轴代号为h。",
+            "doc_meaning": "GB/T 1801-2009 规定了基轴制配合，适用于以下情况：同一轴与多个孔配合要求不同时（如活塞销）；采用冷拉圆钢作轴不再加工时；标准件外径（如滚动轴承外圈）配合时。基轴制优先配合如F7/h6、K7/h6等。",
+            "standard": "GB/T 1801-2009",
+            "location": "优先配合推荐",
+        },
+
+        # === GB/T 1184-1996 术语 ===
+        "形状公差": {
+            "explain": "被测实际要素对其理想要素的允许变动量，不涉及基准。包括直线度、平面度、圆度、圆柱度。",
+            "doc_meaning": "在 GB/T 1184-1996 中，形状公差是单一实际要素的形状所允许的变动全量。形状公差不涉及基准，仅控制被测要素本身的形状误差。形状公差带的方向和位置一般是浮动的，由最小条件确定。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "位置公差": {
+            "explain": "关联实际要素对基准所允许的变动全量。包括定向公差（平行度、垂直度、倾斜度）、定位公差（同轴度、对称度、位置度）和跳动公差。",
+            "doc_meaning": "GB/T 1184-1996 中位置公差分为三类：方向公差（平行度、垂直度、倾斜度）、位置公差（同轴度、对称度、位置度）和跳动公差（圆跳动、全跳动）。位置公差必须指定基准，公差带的方向和位置由基准确定。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "直线度": {
+            "explain": "被测实际直线对其理想直线的允许变动量，用于控制线要素的形状误差。",
+            "doc_meaning": "在 GB/T 1184-1996 中，直线度公差分为1~12级。适用于控制导轨面、轴线等直线要素的形状精度。给定平面内的直线度公差带为两平行直线间的区域，给定方向上的公差带为两平行平面间的区域。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "平面度": {
+            "explain": "被测实际平面对其理想平面的允许变动量，用于控制平表面的形状误差。",
+            "doc_meaning": "GB/T 1184-1996 中平面度公差带为两平行平面之间的区域。平面度是控制平板、工作台面、密封面等平面要素形状精度的重要指标。平面度公差等级与直线度共用1~12级。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "圆度": {
+            "explain": "被测实际圆对其理想圆的允许变动量，用于控制回转体横截面的形状误差。",
+            "doc_meaning": "在 GB/T 1184-1996 中，圆度公差带为在同一正截面上半径差为公差值的两同心圆之间的区域。圆度公差等级为0~12级（比其他形位公差多一个0级），用于控制轴、孔、轴承滚道等回转表面的截面形状精度。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "圆柱度": {
+            "explain": "被测实际圆柱面对其理想圆柱面的允许变动量，综合控制圆柱体横截面和纵截面的形状误差。",
+            "doc_meaning": "GB/T 1184-1996 中圆柱度公差带为半径差为公差值的两同轴圆柱面之间的区域。圆柱度是圆柱体各项形状误差（圆度、素线直线度、轴线直线度）的综合指标。公差等级为0~12级。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "平行度": {
+            "explain": "被测实际要素对基准在平行方向上的允许变动量，属于方向公差。",
+            "doc_meaning": "GB/T 1184-1996 中平行度用于控制被测要素相对于基准要素的平行程度。面对面平行度的公差带为两平行平面间的区域；线对面、面对线、线对线平行度的公差带形状各不相同。必须标注基准。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "垂直度": {
+            "explain": "被测实际要素对基准在垂直方向上的允许变动量，属于方向公差。",
+            "doc_meaning": "在 GB/T 1184-1996 中，垂直度公差带为两平行平面（或直线）之间的区域，且垂直于基准。用于控制两要素之间的90°方向精度，如轴肩对轴线的垂直度。必须标注基准。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "倾斜度": {
+            "explain": "被测实际要素对基准在给定角度方向上的允许变动量，属于方向公差。",
+            "doc_meaning": "GB/T 1184-1996 中倾斜度公差带为两平行平面（或直线）之间的区域，且与基准成理论正确角度（非90°的任意角度）。用于控制两要素之间非直角方向的位置精度。必须标注基准和理论正确角度。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "同轴度": {
+            "explain": "被测实际轴线对基准轴线的允许变动量，属于位置公差。公差值前需加直径符号φ。",
+            "doc_meaning": "在 GB/T 1184-1996 中，同轴度公差带为直径为公差值且与基准轴线同轴的圆柱面内的区域。用于控制阶梯轴各段轴线的同轴程度。标注时公差框格中数值前须加φ，且必须标注基准轴线。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "对称度": {
+            "explain": "被测实际中心要素对基准中心要素的允许变动量，属于位置公差。公差值前需加直径符号φ。",
+            "doc_meaning": "GB/T 1184-1996 中对称度公差带为距离为公差值且相对于基准中心平面对称配置的两平行平面之间的区域。用于控制键槽、花键等对称结构的对称精度。标注时数值前须加φ，且必须标注基准。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "位置度": {
+            "explain": "被测实际要素对其理想位置的允许变动量，属于位置公差。公差值前需加直径符号φ。",
+            "doc_meaning": "在 GB/T 1184-1996 中，位置度公差带为直径为公差值的圆（或球、圆柱）内的区域，理想位置由基准和理论正确尺寸确定。广泛用于控制孔组的位置精度，如螺栓孔位置度。标注时数值前须加φ。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "圆跳动": {
+            "explain": "被测实际要素绕基准轴线作无轴向移动回转一周时，由位置固定的指示器在给定方向上测得的最大与最小读数之差。",
+            "doc_meaning": "GB/T 1184-1996 中圆跳动分为径向圆跳动、端面圆跳动和斜向圆跳动三种。圆跳动是综合公差，可同时控制圆度、同轴度等误差。测量方便，是生产中常用的检测项目。必须标注基准。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "全跳动": {
+            "explain": "被测实际要素绕基准轴线作无轴向移动连续回转，同时指示器沿理想素线连续移动时测得的最大与最小读数之差。",
+            "doc_meaning": "GB/T 1184-1996 中全跳动分为径向全跳动和端面全跳动。全跳动是圆跳动的扩展，控制整个被测表面的综合误差。径向全跳动可同时控制圆柱度和同轴度。必须标注基准。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+        "未注公差": {
+            "explain": "在图样上没有单独标注形位公差要求时，所应遵守的默认公差值。",
+            "doc_meaning": "GB/T 1184-1996 规定了未注形位公差的三个等级：H级（精密级）、K级（中等级）、L级（粗糙级）。当图样上未标注形位公差时，按标准规定的未注公差值执行。一般应在技术要求或标题栏附近注明未注公差等级，如'未注形位公差按GB/T 1184-K'。",
+            "standard": "GB/T 1184-1996",
+            "location": "未注公差值",
+        },
+        "基准": {
+            "explain": "用来确定被测要素方向或位置的理想要素，是位置公差的参考基准。",
+            "doc_meaning": "在 GB/T 1184-1996 中，基准是确定关联要素之间几何关系的依据。基准要素用基准符号标注，由大写字母、细实线连线和涂黑或空白的三角形组成。第一基准、第二基准、第三基准分别用A、B、C表示。",
+            "standard": "GB/T 1184-1996",
+            "location": "形位公差项目及符号",
+        },
+    }
+
+    # 为IT等级和配合代号动态添加词条
+    for grade_name in ["IT01", "IT0", "IT1", "IT2", "IT3", "IT4", "IT5", "IT6", "IT7", "IT8", "IT9", "IT10", "IT11", "IT12", "IT13", "IT14", "IT15", "IT16", "IT17", "IT18"]:
+        if grade_name in IT_VALUES:
+            vals = IT_VALUES[grade_name]
+            glossary[grade_name] = {
+                "explain": f"标准公差等级{grade_name}，公差值范围为 {min(vals)}~{max(vals)} μm（对应尺寸分段 {SIZE_RANGES[0][0]}~{SIZE_RANGES[-1][1]} mm）。",
+                "doc_meaning": f"在 GB/T 1800.1-2020 标准公差数值表中，{grade_name} 对应13个尺寸分段（{SIZE_RANGES[0][0]}~{SIZE_RANGES[-1][1]}mm）的公差值。数值越大表示允许的加工误差越大，精度越低。{grade_name}的公差值从 {min(vals)} μm（小尺寸段）到 {max(vals)} μm（大尺寸段）。",
+                "standard": "GB/T 1800.1-2020",
+                "location": "标准公差数值表 (IT01-IT18)",
+            }
+
+    # 为常用配合代号动态添加词条
+    for fit_name, fit_info in COMMON_FITS_INFO.items():
+        glossary[fit_name] = {
+            "explain": f"{fit_info['type']}，{fit_info['description']}",
+            "doc_meaning": f"在 GB/T 1801-2009 配合选择标准中，{fit_name} 属于{fit_info['type']}。装配方式：{fit_info.get('assembly', '常规')}。该配合在机械设计中常用于{fit_info['description']}",
+            "standard": "GB/T 1801-2009",
+            "location": "常用配合代号",
+        }
+
+    # 为基本偏差字母添加词条
+    hole_deviations = {
+        "A": "孔基本偏差A，下偏差EI为正值且较大，与相应轴形成大间隙配合",
+        "B": "孔基本偏差B，下偏差EI为正值，与相应轴形成大间隙配合",
+        "C": "孔基本偏差C，下偏差EI为正值，与相应轴形成大间隙配合",
+        "D": "孔基本偏差D，下偏差EI为正值，常用于间隙配合如H8/d9、H9/d9",
+        "E": "孔基本偏差E，下偏差EI为正值，用于较大间隙配合",
+        "F": "孔基本偏差F，下偏差EI为正值，常用于转动配合如H8/f7",
+        "G": "孔基本偏差G，下偏差EI为较小正值，用于滑动配合如H7/g6",
+        "H": "孔基本偏差H，基准孔，下偏差EI=0，是基孔制的基准代号",
+        "J": "孔基本偏差J，用于过渡配合",
+        "K": "孔基本偏差K，常用于过渡配合如H7/k6、K7/h6",
+        "M": "孔基本偏差M，用于过渡配合",
+        "N": "孔基本偏差N，常用于过渡配合如H7/n6、N7/h6",
+        "P": "孔基本偏差P，用于过盈配合如H7/p6、P7/h6",
+        "R": "孔基本偏差R，用于过盈配合",
+        "S": "孔基本偏差S，用于过盈配合如H7/s6、S7/h6",
+        "T": "孔基本偏差T，用于较大过盈配合",
+        "U": "孔基本偏差U，用于大过盈配合",
+    }
+    for letter, desc in hole_deviations.items():
+        glossary[letter] = {
+            "explain": desc + "。",
+            "doc_meaning": f"在 GB/T 1800.1-2020 基本偏差系列中，大写字母{letter}代表孔的基本偏差代号。孔的基本偏差从A到ZC共28个代号，决定了孔公差带相对于零线的位置。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "基本偏差系列",
+        }
+
+    shaft_deviations = {
+        "a": "轴基本偏差a，上偏差es为负值且较大，与相应孔形成大间隙配合",
+        "b": "轴基本偏差b，上偏差es为负值，与相应孔形成大间隙配合",
+        "c": "轴基本偏差c，上偏差es为负值，常用于间隙配合如H11/c11",
+        "d": "轴基本偏差d，上偏差es为负值，常用于间隙配合如H9/d9",
+        "e": "轴基本偏差e，上偏差es为负值，用于较大间隙配合",
+        "f": "轴基本偏差f，上偏差es为负值，常用于转动配合如H8/f7、H7/f6",
+        "g": "轴基本偏差g，上偏差es为较小负值，用于滑动配合如H7/g6",
+        "h": "轴基本偏差h，基准轴，上偏差es=0，是基轴制的基准代号",
+        "j": "轴基本偏差j，用于过渡配合",
+        "k": "轴基本偏差k，常用于过渡配合如H7/k6",
+        "m": "轴基本偏差m，用于过渡配合",
+        "n": "轴基本偏差n，常用于过渡配合如H7/n6",
+        "p": "轴基本偏差p，用于过盈配合如H7/p6",
+        "r": "轴基本偏差r，用于过盈配合",
+        "s": "轴基本偏差s，用于过盈配合如H7/s6",
+        "t": "轴基本偏差t，用于较大过盈配合",
+        "u": "轴基本偏差u，用于大过盈配合",
+    }
+    for letter, desc in shaft_deviations.items():
+        glossary[letter] = {
+            "explain": desc + "。",
+            "doc_meaning": f"在 GB/T 1800.1-2020 基本偏差系列中，小写字母{letter}代表轴的基本偏差代号。轴的基本偏差从a到zc共28个代号，决定了轴公差带相对于零线的位置。",
+            "standard": "GB/T 1800.1-2020",
+            "location": "基本偏差系列",
+        }
+
+    return glossary
+
+
+def _search_glossary(glossary, query, current_standard):
+    """在术语词典中搜索匹配项，返回匹配结果列表"""
+    if not query:
+        return []
+    results = []
+    q_upper = query.upper().strip()
+    q_lower = query.lower().strip()
+
+    for key, info in glossary.items():
+        # 检查是否匹配当前标准
+        if current_standard and info["standard"] != current_standard:
+            continue
+        # 精确匹配
+        if key.upper() == q_upper:
+            results.append({"term": key, "match_type": "精确匹配", **info})
+        # 包含匹配（术语名包含搜索词）
+        elif q_upper in key.upper() or q_lower in key.lower():
+            results.append({"term": key, "match_type": "包含匹配", **info})
+        # 解释内容匹配
+        elif q_upper in info["explain"] or q_lower in info["explain"] or query in info["explain"]:
+            results.append({"term": key, "match_type": "内容匹配", **info})
+        elif q_upper in info["doc_meaning"] or q_lower in info["doc_meaning"] or query in info["doc_meaning"]:
+            results.append({"term": key, "match_type": "内容匹配", **info})
+
+    return results
+
+
 def render_standard_reference_tab():
     """渲染标准查阅选项卡 - 基于内置数据查询 GB/T 标准内容"""
     st.markdown("## 📚 国家标准查阅")
     st.markdown("基于应用内置的标准数据，查询 GB/T 1800.1-2020、GB/T 1801-2009、GB/T 1184-1996 相关内容")
-    
+
+    # 构建术语词典
+    glossary = _build_glossary()
+
     # 标准选择
-    std_col1, std_col2 = st.columns([1, 3])
+    std_col1, std_col2, std_col3 = st.columns([1.2, 2.5, 0.8])
     with std_col1:
         standard = st.selectbox(
             "选择标准",
@@ -2599,82 +2921,140 @@ def render_standard_reference_tab():
                 "GB/T 1801-2009 极限与配合配合制",
                 "GB/T 1184-1996 形状和位置公差"
             ],
-            index=0
+            index=0,
+            key="std_ref_select"
         )
-    
-    with std_col2:
-        search_query = st.text_input("🔍 搜索关键词", placeholder="输入关键词如：IT7、H7、f6、圆度、同轴度...")
-    
-    st.markdown("---")
-    
-    # 根据选择的标准显示内容
+
+    # 提取当前标准简称
+    current_standard = None
     if "GB/T 1800.1-2020" in standard:
-        render_gbt1800_content(search_query)
+        current_standard = "GB/T 1800.1-2020"
     elif "GB/T 1801-2009" in standard:
-        render_gbt1801_content(search_query)
+        current_standard = "GB/T 1801-2009"
     else:
-        render_gbt1184_content(search_query)
+        current_standard = "GB/T 1184-1996"
+
+    with std_col2:
+        search_query = st.text_input(
+            "🔍 搜索关键词",
+            placeholder="输入关键词如：IT7、H7、f6、圆度、同轴度、间隙配合...",
+            key="std_ref_search"
+        )
+
+    with std_col3:
+        st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
+        search_clicked = st.button("🔎 搜索", type="primary", use_container_width=True, key="std_ref_search_btn")
+
+    # 执行搜索
+    search_results = []
+    if search_clicked and search_query:
+        search_results = _search_glossary(glossary, search_query, current_standard)
+
+    # 显示搜索结果
+    if search_clicked:
+        st.markdown("---")
+        if not search_query:
+            st.warning("⚠️ 请输入搜索关键词")
+        elif not search_results:
+            st.warning(f"⚠️ 未在 **{standard}** 中找到与「{search_query}」相关的内容")
+            st.info("💡 提示：可尝试其他关键词，如 IT7、H7、f6、圆度、同轴度、间隙配合、基准孔 等")
+        else:
+            st.success(f"✅ 找到 **{len(search_results)}** 条与「{search_query}」相关的结果")
+            # 显示术语解释卡片
+            for i, result in enumerate(search_results):
+                match_badge = "🎯" if result["match_type"] == "精确匹配" else "📌"
+                with st.container():
+                    st.markdown(f"""
+                    <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin-bottom: 12px; background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 20px; font-weight: bold; color: #1a73e8;">{result['term']}</span>
+                            <span style="margin-left: 10px; font-size: 12px; background: #e8f0fe; color: #1a73e8; padding: 2px 8px; border-radius: 12px;">{match_badge} {result['match_type']}</span>
+                            <span style="margin-left: 8px; font-size: 12px; background: #e6f4ea; color: #137333; padding: 2px 8px; border-radius: 12px;">📍 {result['location']}</span>
+                        </div>
+                        <div style="margin-bottom: 6px;">
+                            <span style="font-weight: bold; color: #5f6368;">📖 术语解释：</span>
+                            <span style="color: #333;">{result['explain']}</span>
+                        </div>
+                        <div>
+                            <span style="font-weight: bold; color: #5f6368;">📄 标准含义：</span>
+                            <span style="color: #333;">{result['doc_meaning']}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # 根据选择的标准显示内容，搜索后自动展开匹配的 expander
+    if "GB/T 1800.1-2020" in standard:
+        render_gbt1800_content(search_query, search_results if search_clicked else [])
+    elif "GB/T 1801-2009" in standard:
+        render_gbt1801_content(search_query, search_results if search_clicked else [])
+    else:
+        render_gbt1184_content(search_query, search_results if search_clicked else [])
 
 
-def render_gbt1800_content(search_query):
+def render_gbt1800_content(search_query, search_results):
     """显示 GB/T 1800.1-2020 标准内容"""
     st.markdown("### 📖 GB/T 1800.1-2020 极限与配合 基础")
-    
+
     # 标准信息
     st.info("""
     **标准名称**：产品几何技术规范(GPS) 极限与配合 第1部分：公差、偏差和配合的基础  
     **适用范围**：圆柱表面及其他表面或结构的尺寸要素
     """)
-    
+
+    # 判断哪些 expander 需要展开（基于搜索结果定位）
+    matched_locations = set()
+    if search_results:
+        for r in search_results:
+            matched_locations.add(r["location"])
+
     # 标准公差等级表
-    with st.expander("📊 标准公差数值表 (IT01-IT18)", expanded=True):
-        # 创建标准公差表
+    expand_it = "标准公差数值表" in " ".join(matched_locations)
+    with st.expander("📊 标准公差数值表 (IT01-IT18)", expanded=expand_it):
         size_labels = [f"{r[0]}-{r[1]}" for r in SIZE_RANGES]
         it_grades_list = ["IT5", "IT6", "IT7", "IT8", "IT9", "IT10", "IT11", "IT12"]
-        
+
         df_data = {"尺寸分段(mm)": size_labels}
         for grade in it_grades_list:
             df_data[grade] = IT_VALUES[grade]
-        
+
         df = pd.DataFrame(df_data)
         st.dataframe(df, use_container_width=True, hide_index=True)
-        
-        # 搜索高亮
-        if search_query:
-            search_upper = search_query.upper()
-            if search_upper in IT_VALUES:
-                st.success(f"✅ 找到 **{search_upper}** 公差等级数据")
-                st.write(f"**{search_upper}** 公差值范围：{min(IT_VALUES[search_upper])} ~ {max(IT_VALUES[search_upper])} μm")
-            elif search_query.replace("-", "").replace(" ", "").replace("~", "") in [s.replace("-", "") for s in size_labels]:
-                st.success(f"✅ 找到尺寸分段 **{search_query}** 的公差数据")
-    
+
+        # 如果搜索了具体IT等级，高亮显示
+        if search_results:
+            for r in search_results:
+                if r["term"].startswith("IT") and r["term"] in IT_VALUES:
+                    vals = IT_VALUES[r["term"]]
+                    st.markdown(f"📌 **{r['term']}**：公差值范围 {min(vals)} ~ {max(vals)} μm")
+
     # 基本偏差说明
-    with st.expander("📐 基本偏差系列"):
+    expand_dev = "基本偏差" in " ".join(matched_locations)
+    with st.expander("📐 基本偏差系列", expanded=expand_dev):
         st.markdown("""
         **孔的基本偏差（A-ZC）**：
         - A-H：下偏差 EI（正值，间隙配合）
         - J-N：过渡配合
         - P-ZC：过盈配合
         - H：基准孔，EI = 0
-        
+
         **轴的基本偏差（a-zc）**：
         - a-h：上偏差 es（负值，间隙配合）
         - j-n：过渡配合
         - p-zc：过盈配合
         - h：基准轴，es = 0
         """)
-        
-        if search_query:
-            query_lower = search_query.lower()
-            if query_lower in ["h", "h7", "h8", "h9"]:
-                st.success("✅ **H** 为基准孔，下偏差 EI = 0")
-            elif query_lower in ["h", "h6", "h7", "h8"]:
-                st.success("✅ **h** 为基准轴，上偏差 es = 0")
-            elif len(query_lower) == 1 and query_lower.isalpha():
-                st.info(f"字母 **{query_lower.upper()}** 代表基本偏差代号")
-    
+
+        # 显示匹配的基本偏差
+        if search_results:
+            for r in search_results:
+                if len(r["term"]) == 1 and r["term"].isalpha():
+                    st.markdown(f"📌 **{r['term']}**：{r['explain']}")
+
     # 配合类型说明
-    with st.expander("🔗 配合类型"):
+    expand_fit = "配合类型" in " ".join(matched_locations)
+    with st.expander("🔗 配合类型", expanded=expand_fit):
         st.markdown("""
         | 配合类型 | 条件 | 特性 |
         |---------|------|------|
@@ -2683,18 +3063,29 @@ def render_gbt1800_content(search_query):
         | 过盈配合 | 孔最大 ≤ 轴最小 | 固定连接 |
         """)
 
+        if search_results:
+            for r in search_results:
+                if r["term"] in ["间隙配合", "过渡配合", "过盈配合"]:
+                    st.markdown(f"📌 **{r['term']}**：{r['doc_meaning']}")
 
-def render_gbt1801_content(search_query):
+
+def render_gbt1801_content(search_query, search_results):
     """显示 GB/T 1801-2009 标准内容"""
     st.markdown("### 📖 GB/T 1801-2009 极限与配合配合制")
-    
+
     st.info("""
     **标准名称**：产品几何技术规范(GPS) 极限与配合 公差带和配合的选择  
     **适用范围**：光滑圆柱表面及单一尺寸要素的配合选择
     """)
-    
+
+    matched_locations = set()
+    if search_results:
+        for r in search_results:
+            matched_locations.add(r["location"])
+
     # 常用配合表
-    with st.expander("📋 常用配合代号", expanded=True):
+    expand_common = "常用配合" in " ".join(matched_locations)
+    with st.expander("📋 常用配合代号", expanded=expand_common):
         fit_data = []
         for fit_name, fit_info in COMMON_FITS_INFO.items():
             fit_data.append({
@@ -2702,42 +3093,55 @@ def render_gbt1801_content(search_query):
                 "配合类型": fit_info["type"],
                 "说明": fit_info["description"][:40] + "..." if len(fit_info["description"]) > 40 else fit_info["description"]
             })
-        
+
         df_fits = pd.DataFrame(fit_data)
         st.dataframe(df_fits, use_container_width=True, hide_index=True)
-        
-        # 搜索配合
-        if search_query:
-            matched_fits = [f for f in fit_data if search_query.upper() in f["配合代号"]]
+
+        # 显示匹配的配合
+        if search_results:
+            matched_fits = [r for r in search_results if r["term"] in COMMON_FITS_INFO]
             if matched_fits:
-                st.success(f"✅ 找到 **{len(matched_fits)}** 个匹配的配合")
-                for fit in matched_fits:
-                    st.write(f"**{fit['配合代号']}**：{fit['配合类型']} - {fit['说明']}")
-    
+                st.markdown("---")
+                st.markdown("**📌 匹配的配合说明：**")
+                for r in matched_fits:
+                    st.markdown(f"- **{r['term']}**（{r['match_type']}）：{r['explain']}")
+
     # 优先配合
-    with st.expander("⭐ 优先配合推荐"):
+    expand_priority = "优先配合" in " ".join(matched_locations)
+    with st.expander("⭐ 优先配合推荐", expanded=expand_priority):
         st.markdown("""
         **基孔制优先配合**：
         - H11/c11, H9/d9, H8/f7, H7/f6, H7/g6, H7/h6
         - H7/k6, H7/n6, H7/p6, H7/s6
-        
+
         **基轴制优先配合**：
         - C11/h11, D9/h9, F8/h7, F7/h6, G7/h6, H7/h6
         - K7/h6, N7/h6, P7/h6, S7/h6
         """)
 
+        if search_results:
+            for r in search_results:
+                if r["term"] in ["优先配合", "基孔制", "基轴制"]:
+                    st.markdown(f"📌 **{r['term']}**：{r['doc_meaning']}")
 
-def render_gbt1184_content(search_query):
+
+def render_gbt1184_content(search_query, search_results):
     """显示 GB/T 1184-1996 标准内容"""
     st.markdown("### 📖 GB/T 1184-1996 形状和位置公差")
-    
+
     st.info("""
     **标准名称**：形状和位置公差 未注公差值  
     **适用范围**：机械零件的形状和位置公差标注
     """)
-    
+
+    matched_locations = set()
+    if search_results:
+        for r in search_results:
+            matched_locations.add(r["location"])
+
     # 形位公差项目
-    with st.expander("📐 形位公差项目及符号", expanded=True):
+    expand_gdandt = "形位公差项目" in " ".join(matched_locations)
+    with st.expander("📐 形位公差项目及符号", expanded=expand_gdandt):
         gdandt_items = [
             {"项目": "直线度", "符号": "—", "类型": "形状公差", "有基准": "否"},
             {"项目": "平面度", "符号": "▱", "类型": "形状公差", "有基准": "否"},
@@ -2752,22 +3156,26 @@ def render_gbt1184_content(search_query):
             {"项目": "圆跳动", "符号": "↗", "类型": "跳动公差", "有基准": "是"},
             {"项目": "全跳动", "符号": "⇗", "类型": "跳动公差", "有基准": "是"},
         ]
-        
+
         df_gdandt = pd.DataFrame(gdandt_items)
         st.dataframe(df_gdandt, use_container_width=True, hide_index=True)
-        
-        # 搜索形位公差
-        if search_query:
-            matched = [item for item in gdandt_items if search_query in item["项目"]]
-            if matched:
-                st.success(f"✅ 找到 **{matched[0]['项目']}**")
-                st.write(f"符号：**{matched[0]['符号']}** | 类型：**{matched[0]['类型']}** | 需要基准：**{matched[0]['有基准']}**")
-    
+
+        # 显示匹配的形位公差
+        if search_results:
+            gdandt_names = [item["项目"] for item in gdandt_items]
+            matched_gdandt = [r for r in search_results if r["term"] in gdandt_names]
+            if matched_gdandt:
+                st.markdown("---")
+                st.markdown("**📌 匹配的形位公差说明：**")
+                for r in matched_gdandt:
+                    st.markdown(f"- **{r['term']}**（{r['match_type']}）：{r['explain']}")
+
     # 公差等级
-    with st.expander("📊 形位公差等级"):
+    expand_grade = "形位公差等级" in " ".join(matched_locations)
+    with st.expander("📊 形位公差等级", expanded=expand_grade):
         st.markdown("""
         **公差等级**：1~12级（1级最高，12级最低）
-        
+
         **常用等级范围**：
         - 圆度、圆柱度：0~12级
         - 直线度、平面度：1~12级
@@ -2775,18 +3183,24 @@ def render_gbt1184_content(search_query):
         - 同轴度、对称度：1~12级
         - 圆跳动、全跳动：1~12级
         """)
-    
+
     # 未注公差
-    with st.expander("📝 未注公差值"):
+    expand_untol = "未注公差" in " ".join(matched_locations)
+    with st.expander("📝 未注公差值", expanded=expand_untol):
         st.markdown("""
         **未注公差等级**：H（精密）、K（中等）、L（粗糙）
-        
+
         当图样上未标注形位公差时，按以下标准执行：
         - 直线度/平面度：按 GB/T 1184-H/K/L
         - 垂直度：按 GB/T 1184-H/K/L
         - 对称度：按 GB/T 1184-H/K/L
         - 圆跳动：按 GB/T 1184-H/K/L
         """)
+
+        if search_results:
+            for r in search_results:
+                if r["term"] == "未注公差":
+                    st.markdown(f"📌 **{r['term']}**：{r['doc_meaning']}")
 
 
 # ============================================================

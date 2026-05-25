@@ -2305,6 +2305,176 @@ def render_fit_recommendation_tab():
 # 第10节：形位公差查询界面渲染函数
 # ============================================================
 
+def generate_gdandt_annotation_svg(item_name, tol_value_um, grade, param_value):
+    """生成形位公差标注示例的SVG - 标准GB/T 1182格式
+    
+    包含: 形位公差框格(符号+公差值+基准)、指引线、箭头、基准符号、零件简图
+    """
+    # 形位公差符号定义 (Unicode/自定义SVG路径)
+    symbol_map = {
+        "圆度": {"symbol": "○", "svg_path": None, "has_datum": False,
+                 "desc": "被测要素为圆柱面/球面的横截面", "arrow_to": "轮廓线"},
+        "圆柱度": {"symbol": "⌭", "svg_path": None, "has_datum": False,
+                   "desc": "被测要素为圆柱面", "arrow_to": "尺寸线"},
+        "直线度": {"symbol": "—", "svg_path": None, "has_datum": False,
+                   "desc": "被测要素为轴线或表面素线", "arrow_to": "尺寸线"},
+        "平面度": {"symbol": "▱", "svg_path": None, "has_datum": False,
+                   "desc": "被测要素为平面表面", "arrow_to": "轮廓线"},
+        "平行度": {"symbol": "∥", "svg_path": None, "has_datum": True,
+                   "desc": "被测要素相对于基准平行", "arrow_to": "尺寸线"},
+        "垂直度": {"symbol": "⊥", "svg_path": None, "has_datum": True,
+                   "desc": "被测要素相对于基准垂直", "arrow_to": "轮廓线"},
+        "同轴度": {"symbol": "◎", "svg_path": None, "has_datum": True,
+                   "desc": "被测轴线相对于基准轴线同轴", "arrow_to": "尺寸线"},
+        "对称度": {"symbol": "⌢", "svg_path": None, "has_datum": True,
+                   "desc": "被测中心面相对于基准中心面对称", "arrow_to": "尺寸线"},
+        "圆跳动": {"symbol": "↗", "svg_path": None, "has_datum": True,
+                   "desc": "被测要素相对于基准的圆跳动", "arrow_to": "轮廓线"},
+        "全跳动": {"symbol": "⇗", "svg_path": None, "has_datum": True,
+                   "desc": "被测要素相对于基准的全跳动", "arrow_to": "轮廓线"},
+        "位置度": {"symbol": "⌖", "svg_path": None, "has_datum": True,
+                   "desc": "被测要素相对于基准的位置", "arrow_to": "尺寸线"},
+        "倾斜度": {"symbol": "∠", "svg_path": None, "has_datum": True,
+                   "desc": "被测要素相对于基准倾斜", "arrow_to": "轮廓线"},
+    }
+    
+    info = symbol_map.get(item_name, {"symbol": "?", "svg_path": None, "has_datum": True,
+                                       "desc": "被测要素", "arrow_to": "轮廓线"})
+    
+    # 将公差值从微米转换为毫米显示
+    if tol_value_um >= 1000:
+        tol_mm_str = f"{tol_value_um / 1000:.1f}"
+    else:
+        tol_mm_str = f"{tol_value_um / 1000:.3f}"
+    
+    has_datum = info["has_datum"]
+    
+    # SVG 参数
+    svg_width = 520
+    svg_height = 220
+    
+    svg = [f'<svg width="{svg_width}" height="{svg_height}" xmlns="http://www.w3.org/2000/svg">']
+    svg.append('<style>')
+    svg.append('  text { font-family: Arial, sans-serif; }')
+    svg.append('  .thick { stroke: #333; stroke-width: 2.5; }')
+    svg.append('  .thin { stroke: #333; stroke-width: 1; }')
+    svg.append('  .center { stroke: #333; stroke-width: 0.8; stroke-dasharray: 12,3,3,3; }')
+    svg.append('  .frame-text { font-size: 14px; font-weight: bold; fill: #1565c0; }')
+    svg.append('  .label { font-size: 11px; fill: #555; }')
+    svg.append('  .datum-text { font-size: 13px; font-weight: bold; fill: #d32f2f; }')
+    svg.append('  .desc-text { font-size: 10px; fill: #888; }')
+    svg.append('</style>')
+    
+    # ========== 零件简图（右侧）==========
+    part_x = 300
+    part_y = 50
+    part_w = 180
+    part_h = 80
+    
+    # 零件外形（矩形代表零件截面）
+    svg.append(f'<rect x="{part_x}" y="{part_y}" width="{part_w}" height="{part_h}" fill="#f5f5f5" stroke="#333" stroke-width="2" rx="3"/>')
+    
+    # 中心线
+    svg.append(f'<line x1="{part_x - 20}" y1="{part_y + part_h // 2}" x2="{part_x + part_w + 20}" y2="{part_y + part_h // 2}" class="center"/>')
+    
+    # 被测要素指示箭头（指向零件轮廓）
+    arrow_target_y = part_y + part_h // 2
+    if info["arrow_to"] == "轮廓线":
+        # 箭头指向轮廓线
+        svg.append(f'<line x1="{part_x + 30}" y1="{part_y - 5}" x2="{part_x + 30}" y2="{part_y}" stroke="#1565c0" stroke-width="1.5"/>')
+        svg.append(f'<polygon points="{part_x + 30},{part_y} {part_x + 26},{part_y - 6} {part_x + 34},{part_y - 6}" fill="#1565c0"/>')
+        leader_end_y = part_y - 5
+    else:
+        # 箭头指向尺寸线
+        svg.append(f'<line x1="{part_x + 30}" y1="{arrow_target_y - 15}" x2="{part_x + 30}" y2="{arrow_target_y - 8}" stroke="#1565c0" stroke-width="1.5"/>')
+        svg.append(f'<polygon points="{part_x + 30},{arrow_target_y - 8} {part_x + 26},{arrow_target_y - 14} {part_x + 34},{arrow_target_y - 14}" fill="#1565c0"/>')
+        leader_end_y = arrow_target_y - 15
+    
+    # ========== 形位公差框格（左侧）==========
+    frame_x = 30
+    frame_y = 30
+    cell_w = 50
+    cell_h = 28
+    
+    # 框格背景
+    if has_datum:
+        total_frame_w = cell_w * 3
+    else:
+        total_frame_w = cell_w * 2
+    
+    svg.append(f'<rect x="{frame_x}" y="{frame_y}" width="{total_frame_w}" height="{cell_h}" fill="white" stroke="#333" stroke-width="2"/>')
+    
+    # 分隔线
+    svg.append(f'<line x1="{frame_x + cell_w}" y1="{frame_y}" x2="{frame_x + cell_w}" y2="{frame_y + cell_h}" stroke="#333" stroke-width="1"/>')
+    svg.append(f'<line x1="{frame_x + cell_w * 2}" y1="{frame_y}" x2="{frame_x + cell_w * 2}" y2="{frame_y + cell_h}" stroke="#333" stroke-width="1"/>')
+    
+    # 第一格：形位公差符号
+    symbol_cx = frame_x + cell_w // 2
+    symbol_cy = frame_y + cell_h // 2 + 1
+    svg.append(f'<text x="{symbol_cx}" y="{symbol_cy + 5}" text-anchor="middle" font-size="18" fill="#1565c0">{info["symbol"]}</text>')
+    
+    # 第二格：公差值
+    val_cx = frame_x + cell_w + cell_w // 2
+    svg.append(f'<text x="{val_cx}" y="{symbol_cy + 5}" text-anchor="middle" class="frame-text">{tol_mm_str}</text>')
+    
+    # 第三格：基准字母（如果有）
+    if has_datum:
+        datum_cx = frame_x + cell_w * 2 + cell_w // 2
+        svg.append(f'<text x="{datum_cx}" y="{symbol_cy + 5}" text-anchor="middle" class="datum-text">A</text>')
+    
+    # ========== 指引线（从框格到零件）==========
+    # 水平段
+    guide_start_x = frame_x + total_frame_w
+    guide_end_x = part_x + 30
+    guide_y = frame_y + cell_h // 2
+    
+    svg.append(f'<line x1="{guide_start_x}" y1="{guide_y}" x2="{guide_end_x}" y2="{guide_y}" stroke="#1565c0" stroke-width="1.2"/>')
+    
+    # 垂直段（从水平指引线到零件）
+    svg.append(f'<line x1="{guide_end_x}" y1="{guide_y}" x2="{guide_end_x}" y2="{leader_end_y}" stroke="#1565c0" stroke-width="1.2"/>')
+    
+    # ========== 基准符号（如果有）==========
+    if has_datum:
+        # 基准三角形和字母框
+        datum_x = part_x + part_w - 30
+        datum_y = part_y + part_h + 15
+        
+        # 基准字母框
+        svg.append(f'<rect x="{datum_x - 12}" y="{datum_y}" width="24" height="20" fill="white" stroke="#d32f2f" stroke-width="1.5"/>')
+        svg.append(f'<text x="{datum_x}" y="{datum_y + 15}" text-anchor="middle" class="datum-text">A</text>')
+        
+        # 基准三角形
+        tri_y = datum_y + 20
+        svg.append(f'<polygon points="{datum_x - 8},{tri_y} {datum_x + 8},{tri_y} {datum_x},{tri_y + 12}" fill="#d32f2f" stroke="#d32f2f" stroke-width="1"/>')
+        
+        # 基准指引线（从三角形到零件）
+        svg.append(f'<line x1="{datum_x}" y1="{tri_y + 12}" x2="{datum_x}" y2="{part_y + part_h}" stroke="#d32f2f" stroke-width="1.2"/>')
+        
+        # 基准标注说明
+        svg.append(f'<text x="{datum_x}" y="{tri_y + 28}" text-anchor="middle" class="desc-text">基准A</text>')
+    
+    # ========== 标注说明文字 ==========
+    desc_y = svg_height - 60
+    
+    # 公差项目名称
+    svg.append(f'<text x="{frame_x}" y="{frame_y + cell_h + 20}" font-size="13" font-weight="bold" fill="#333">{item_name} (等级{grade})</text>')
+    
+    # 标注说明
+    svg.append(f'<text x="{frame_x}" y="{desc_y}" class="label">📌 {info["desc"]}</text>')
+    svg.append(f'<text x="{frame_x}" y="{desc_y + 16}" class="label">📌 指引线箭头指向{info["arrow_to"]}</text>')
+    if has_datum:
+        svg.append(f'<text x="{frame_x}" y="{desc_y + 32}" class="label">📌 基准A标注在被测要素的基准面上</text>')
+    
+    # 公差值说明
+    svg.append(f'<text x="{frame_x + total_frame_w + 10}" y="{frame_y + cell_h + 20}" class="label">公差值: {tol_value_um} μm = {tol_mm_str} mm</text>')
+    
+    # 标准参考
+    svg.append(f'<text x="{svg_width // 2}" y="{svg_height - 8}" text-anchor="middle" class="desc-text">标注依据: GB/T 1182-2018 (ISO 1101)</text>')
+    
+    svg.append('</svg>')
+    return '\n'.join(svg)
+
+
 def render_geometric_tolerance_tab():
     """渲染形位公差查询选项卡"""
     st.markdown("## 📐 形位公差推荐")
@@ -2361,6 +2531,13 @@ def render_geometric_tolerance_tab():
                 else:
                     col_value.write("公差值: 无法查询（参数超出范围）")
                 col_reason.info(rec["reason"])
+
+                # 标注示例图
+                if tol_value is not None:
+                    annotation_svg = generate_gdandt_annotation_svg(
+                        item_name, tol_value, mid_grade, param_value
+                    )
+                    st.markdown(annotation_svg, unsafe_allow_html=True)
 
                 # 标注位置和方法建议
                 st.caption(f"📌 标注建议: 在{part_type}的{part_function}处标注{item_name}，推荐等级{adj_grade_min}~{adj_grade_max}级")

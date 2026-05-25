@@ -2581,7 +2581,216 @@ def render_geometric_tolerance_tab():
 
 
 # ============================================================
-# 第11节：主函数
+# 第11节：标准查阅功能
+# ============================================================
+
+def render_standard_reference_tab():
+    """渲染标准查阅选项卡 - 基于内置数据查询 GB/T 标准内容"""
+    st.markdown("## 📚 国家标准查阅")
+    st.markdown("基于应用内置的标准数据，查询 GB/T 1800.1-2020、GB/T 1801-2009、GB/T 1184-1996 相关内容")
+    
+    # 标准选择
+    std_col1, std_col2 = st.columns([1, 3])
+    with std_col1:
+        standard = st.selectbox(
+            "选择标准",
+            options=[
+                "GB/T 1800.1-2020 极限与配合",
+                "GB/T 1801-2009 极限与配合配合制",
+                "GB/T 1184-1996 形状和位置公差"
+            ],
+            index=0
+        )
+    
+    with std_col2:
+        search_query = st.text_input("🔍 搜索关键词", placeholder="输入关键词如：IT7、H7、f6、圆度、同轴度...")
+    
+    st.markdown("---")
+    
+    # 根据选择的标准显示内容
+    if "GB/T 1800.1-2020" in standard:
+        render_gbt1800_content(search_query)
+    elif "GB/T 1801-2009" in standard:
+        render_gbt1801_content(search_query)
+    else:
+        render_gbt1184_content(search_query)
+
+
+def render_gbt1800_content(search_query):
+    """显示 GB/T 1800.1-2020 标准内容"""
+    st.markdown("### 📖 GB/T 1800.1-2020 极限与配合 基础")
+    
+    # 标准信息
+    st.info("""
+    **标准名称**：产品几何技术规范(GPS) 极限与配合 第1部分：公差、偏差和配合的基础  
+    **适用范围**：圆柱表面及其他表面或结构的尺寸要素
+    """)
+    
+    # 标准公差等级表
+    with st.expander("📊 标准公差数值表 (IT01-IT18)", expanded=True):
+        # 创建标准公差表
+        size_labels = [f"{r[0]}-{r[1]}" for r in SIZE_RANGES]
+        it_grades_list = ["IT5", "IT6", "IT7", "IT8", "IT9", "IT10", "IT11", "IT12"]
+        
+        df_data = {"尺寸分段(mm)": size_labels}
+        for grade in it_grades_list:
+            df_data[grade] = IT_VALUES[grade]
+        
+        df = pd.DataFrame(df_data)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+        
+        # 搜索高亮
+        if search_query:
+            search_upper = search_query.upper()
+            if search_upper in IT_VALUES:
+                st.success(f"✅ 找到 **{search_upper}** 公差等级数据")
+                st.write(f"**{search_upper}** 公差值范围：{min(IT_VALUES[search_upper])} ~ {max(IT_VALUES[search_upper])} μm")
+            elif search_query.replace("-", "").replace(" ", "").replace("~", "") in [s.replace("-", "") for s in size_labels]:
+                st.success(f"✅ 找到尺寸分段 **{search_query}** 的公差数据")
+    
+    # 基本偏差说明
+    with st.expander("📐 基本偏差系列"):
+        st.markdown("""
+        **孔的基本偏差（A-ZC）**：
+        - A-H：下偏差 EI（正值，间隙配合）
+        - J-N：过渡配合
+        - P-ZC：过盈配合
+        - H：基准孔，EI = 0
+        
+        **轴的基本偏差（a-zc）**：
+        - a-h：上偏差 es（负值，间隙配合）
+        - j-n：过渡配合
+        - p-zc：过盈配合
+        - h：基准轴，es = 0
+        """)
+        
+        if search_query:
+            query_lower = search_query.lower()
+            if query_lower in ["h", "h7", "h8", "h9"]:
+                st.success("✅ **H** 为基准孔，下偏差 EI = 0")
+            elif query_lower in ["h", "h6", "h7", "h8"]:
+                st.success("✅ **h** 为基准轴，上偏差 es = 0")
+            elif len(query_lower) == 1 and query_lower.isalpha():
+                st.info(f"字母 **{query_lower.upper()}** 代表基本偏差代号")
+    
+    # 配合类型说明
+    with st.expander("🔗 配合类型"):
+        st.markdown("""
+        | 配合类型 | 条件 | 特性 |
+        |---------|------|------|
+        | 间隙配合 | 孔最小 ≥ 轴最大 | 可相对运动 |
+        | 过渡配合 | 可能有间隙或过盈 | 精确定位 |
+        | 过盈配合 | 孔最大 ≤ 轴最小 | 固定连接 |
+        """)
+
+
+def render_gbt1801_content(search_query):
+    """显示 GB/T 1801-2009 标准内容"""
+    st.markdown("### 📖 GB/T 1801-2009 极限与配合配合制")
+    
+    st.info("""
+    **标准名称**：产品几何技术规范(GPS) 极限与配合 公差带和配合的选择  
+    **适用范围**：光滑圆柱表面及单一尺寸要素的配合选择
+    """)
+    
+    # 常用配合表
+    with st.expander("📋 常用配合代号", expanded=True):
+        fit_data = []
+        for fit_name, fit_info in COMMON_FITS_INFO.items():
+            fit_data.append({
+                "配合代号": fit_name,
+                "配合类型": fit_info["type"],
+                "说明": fit_info["description"][:40] + "..." if len(fit_info["description"]) > 40 else fit_info["description"]
+            })
+        
+        df_fits = pd.DataFrame(fit_data)
+        st.dataframe(df_fits, use_container_width=True, hide_index=True)
+        
+        # 搜索配合
+        if search_query:
+            matched_fits = [f for f in fit_data if search_query.upper() in f["配合代号"]]
+            if matched_fits:
+                st.success(f"✅ 找到 **{len(matched_fits)}** 个匹配的配合")
+                for fit in matched_fits:
+                    st.write(f"**{fit['配合代号']}**：{fit['配合类型']} - {fit['说明']}")
+    
+    # 优先配合
+    with st.expander("⭐ 优先配合推荐"):
+        st.markdown("""
+        **基孔制优先配合**：
+        - H11/c11, H9/d9, H8/f7, H7/f6, H7/g6, H7/h6
+        - H7/k6, H7/n6, H7/p6, H7/s6
+        
+        **基轴制优先配合**：
+        - C11/h11, D9/h9, F8/h7, F7/h6, G7/h6, H7/h6
+        - K7/h6, N7/h6, P7/h6, S7/h6
+        """)
+
+
+def render_gbt1184_content(search_query):
+    """显示 GB/T 1184-1996 标准内容"""
+    st.markdown("### 📖 GB/T 1184-1996 形状和位置公差")
+    
+    st.info("""
+    **标准名称**：形状和位置公差 未注公差值  
+    **适用范围**：机械零件的形状和位置公差标注
+    """)
+    
+    # 形位公差项目
+    with st.expander("📐 形位公差项目及符号", expanded=True):
+        gdandt_items = [
+            {"项目": "直线度", "符号": "—", "类型": "形状公差", "有基准": "否"},
+            {"项目": "平面度", "符号": "▱", "类型": "形状公差", "有基准": "否"},
+            {"项目": "圆度", "符号": "○", "类型": "形状公差", "有基准": "否"},
+            {"项目": "圆柱度", "符号": "⌭", "类型": "形状公差", "有基准": "否"},
+            {"项目": "平行度", "符号": "∥", "类型": "方向公差", "有基准": "是"},
+            {"项目": "垂直度", "符号": "⊥", "类型": "方向公差", "有基准": "是"},
+            {"项目": "倾斜度", "符号": "∠", "类型": "方向公差", "有基准": "是"},
+            {"项目": "同轴度", "符号": "◎", "类型": "位置公差", "有基准": "是"},
+            {"项目": "对称度", "符号": "⌢", "类型": "位置公差", "有基准": "是"},
+            {"项目": "位置度", "符号": "⌖", "类型": "位置公差", "有基准": "是"},
+            {"项目": "圆跳动", "符号": "↗", "类型": "跳动公差", "有基准": "是"},
+            {"项目": "全跳动", "符号": "⇗", "类型": "跳动公差", "有基准": "是"},
+        ]
+        
+        df_gdandt = pd.DataFrame(gdandt_items)
+        st.dataframe(df_gdandt, use_container_width=True, hide_index=True)
+        
+        # 搜索形位公差
+        if search_query:
+            matched = [item for item in gdandt_items if search_query in item["项目"]]
+            if matched:
+                st.success(f"✅ 找到 **{matched[0]['项目']}**")
+                st.write(f"符号：**{matched[0]['符号']}** | 类型：**{matched[0]['类型']}** | 需要基准：**{matched[0]['有基准']}**")
+    
+    # 公差等级
+    with st.expander("📊 形位公差等级"):
+        st.markdown("""
+        **公差等级**：1~12级（1级最高，12级最低）
+        
+        **常用等级范围**：
+        - 圆度、圆柱度：0~12级
+        - 直线度、平面度：1~12级
+        - 平行度、垂直度：1~12级
+        - 同轴度、对称度：1~12级
+        - 圆跳动、全跳动：1~12级
+        """)
+    
+    # 未注公差
+    with st.expander("📝 未注公差值"):
+        st.markdown("""
+        **未注公差等级**：H（精密）、K（中等）、L（粗糙）
+        
+        当图样上未标注形位公差时，按以下标准执行：
+        - 直线度/平面度：按 GB/T 1184-H/K/L
+        - 垂直度：按 GB/T 1184-H/K/L
+        - 对称度：按 GB/T 1184-H/K/L
+        - 圆跳动：按 GB/T 1184-H/K/L
+        """)
+
+
+# ============================================================
+# 第12节：主函数
 # ============================================================
 
 def main():
@@ -2595,11 +2804,12 @@ def main():
     """, unsafe_allow_html=True)
 
     # 创建选项卡
-    tab1, tab2, tab3, tab4 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "📏 尺寸链计算",
         "🔍 公差查询",
         "🎯 公差配合推荐",
         "📐 形位公差推荐",
+        "📚 标准查阅",
     ])
 
     with tab1:
@@ -2613,6 +2823,9 @@ def main():
 
     with tab4:
         render_geometric_tolerance_tab()
+
+    with tab5:
+        render_standard_reference_tab()
 
     # 页脚免责声明
     st.markdown("""

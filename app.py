@@ -3434,24 +3434,28 @@ def render_geometric_tolerance_tab():
             
             # 创建卡片式布局
             with st.container():
-                # 卡片头部
-                st.markdown(f"""
+                # 卡片头部 - 使用 .format() 避免 f-string 花括号冲突
+                header_html = """
                 <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                             padding: 12px 16px; border-radius: 8px 8px 0 0; margin-top: 10px;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span style="color: white; font-size: 18px; font-weight: bold;">
-                            {idx + 1}. {item_name}
+                            {idx_num}. {item}
                         </span>
                         <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; 
                                    border-radius: 12px; color: white; font-size: 12px;">
-                            {tol_type_badge}
+                            {badge}
                         </span>
                     </div>
                 </div>
-                """, unsafe_allow_html=True)
+                """.format(idx_num=idx + 1, item=item_name, badge=tol_type_badge)
+                st.markdown(header_html, unsafe_allow_html=True)
                 
-                # 卡片主体
-                st.markdown(f"""
+                # 卡片主体 - 使用 .format() 避免 f-string 花括号冲突
+                tol_display_str = str(tol_value) if tol_value else "—"
+                param_info_str = "@ {}mm".format(param_value) if tol_value else "超出查询范围"
+                
+                body_html = """
                 <div style="background: #f8f9fa; padding: 16px; border-radius: 0 0 8px 8px; 
                             border: 1px solid #e0e0e0; border-top: none;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -3459,18 +3463,18 @@ def render_geometric_tolerance_tab():
                                     border-left: 4px solid #667eea;">
                             <div style="color: #666; font-size: 12px; margin-bottom: 4px;">📌 推荐等级</div>
                             <div style="font-size: 24px; font-weight: bold; color: #333;">
-                                {adj_grade_min} ~ {adj_grade_max} 级
+                                {gmin} ~ {gmax} 级
                             </div>
-                            <div style="color: #888; font-size: 11px;">{grade_desc}</div>
+                            <div style="color: #888; font-size: 11px;">{gdesc}</div>
                         </div>
                         <div style="background: white; padding: 12px; border-radius: 6px; 
                                     border-left: 4px solid #48bb78;">
                             <div style="color: #666; font-size: 12px; margin-bottom: 4px;">📏 公差值（参考）</div>
                             <div style="font-size: 24px; font-weight: bold; color: #333;">
-                                {f"{tol_value}" if tol_value else "—"} μm
+                                {tol} μm
                             </div>
                             <div style="color: #888; font-size: 11px;">
-                                {f"@ {param_value}mm" if tol_value else "超出查询范围"}
+                                {pinfo}
                             </div>
                         </div>
                     </div>
@@ -3481,23 +3485,35 @@ def render_geometric_tolerance_tab():
                         <div style="color: #444; font-size: 13px; line-height: 1.5;">{reason}</div>
                     </div>
                     
-                    {f'''
-                    <div style="background: white; padding: 12px; border-radius: 6px; margin-top: 12px; 
-                                border-left: 4px solid #4299e1;">
-                        <div style="color: #666; font-size: 12px; margin-bottom: 6px;">🔧 典型应用</div>
-                        <div style="color: #444; font-size: 13px; line-height: 1.5;">{application}</div>
-                    </div>
-                    ''' if application else ''}
+                    {app_section}
                     
                     <div style="background: #fff3cd; padding: 10px 12px; border-radius: 6px; margin-top: 12px;">
                         <div style="color: #856404; font-size: 12px;">
                             <b>📝 标注建议：</b>在零件图上标注 
-                            <b>{item_name}</b> 公差，等级选用 <b>{adj_grade_min}~{adj_grade_max}级</b>，
+                            <b>{item}</b> 公差，等级选用 <b>{gmin}~{gmax}级</b>，
                             基准标注 <b>📍 A</b>（根据具体位置确定基准要素）
                         </div>
                     </div>
                 </div>
-                """, unsafe_allow_html=True)
+                """
+                
+                if application:
+                    app_section = """
+                    <div style="background: white; padding: 12px; border-radius: 6px; margin-top: 12px; 
+                                border-left: 4px solid #4299e1;">
+                        <div style="color: #666; font-size: 12px; margin-bottom: 6px;">🔧 典型应用</div>
+                        <div style="color: #444; font-size: 13px; line-height: 1.5;">{app}</div>
+                    </div>
+                    """.format(app=application)
+                else:
+                    app_section = ""
+                
+                body_html = body_html.format(
+                    gmin=adj_grade_min, gmax=adj_grade_max, gdesc=grade_desc,
+                    tol=tol_display_str, pinfo=param_info_str,
+                    reason=reason, item=item_name, app_section=app_section
+                )
+                st.markdown(body_html, unsafe_allow_html=True)
                 
                 # 标注示例图
                 if tol_value is not None:

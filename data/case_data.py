@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-常见机械结构公差案例库 + 防错设计检查清单
+常见机械结构公差案例库 + 防错设计检查清单 + 内置材料库
 """
 
 # ==================== 常见机械结构公差案例库 ====================
@@ -13,6 +13,42 @@ MECHANICAL_CASES = [
             {
                 "name": "深沟球轴承（内圈旋转）安装",
                 "description": "最常见的轴承安装方式，内圈随轴旋转，外圈固定在轴承座中。",
+                "svg_diagram": """
+<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- 轴 -->
+  <rect x="140" y="75" width="200" height="30" fill="#6B7280" stroke="#374151" stroke-width="2"/>
+  <text x="330" y="97" font-size="11" fill="#fff">轴</text>
+  <!-- 轴承外圈 -->
+  <rect x="180" y="55" width="80" height="70" fill="#FCD34D" stroke="#F59E0B" stroke-width="2" rx="5"/>
+  <text x="210" y="93" font-size="10" fill="#78350F">外圈</text>
+  <!-- 轴承内圈 -->
+  <rect x="185" y="70" width="70" height="40" fill="#93C5FD" stroke="#3B82F6" stroke-width="2" rx="3"/>
+  <text x="205" y="93" font-size="10" fill="#1E40AF">内圈</text>
+  <!-- 滚动体 -->
+  <circle cx="220" cy="90" r="8" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
+  <circle cx="240" cy="90" r="8" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
+  <!-- 轴承座孔 -->
+  <rect x="160" y="45" width="120" height="90" fill="none" stroke="#EF4444" stroke-width="2" stroke-dasharray="5,3" rx="8"/>
+  <text x="180" y="38" font-size="10" fill="#EF4444">轴承座孔 H7</text>
+  <!-- 配合标注 -->
+  <line x1="170" y1="110" x2="170" y2="140" stroke="#EF4444" stroke-width="1.5"/>
+  <line x1="165" y1="140" x2="175" y2="140" stroke="#EF4444" stroke-width="1.5"/>
+  <line x1="255" y1="110" x2="255" y2="140" stroke="#EF4444" stroke-width="1.5"/>
+  <line x1="250" y1="140" x2="260" y2="140" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="195" y="155" font-size="9" fill="#EF4444" text-anchor="middle">过盈/过渡配合</text>
+  <!-- 轴肩 -->
+  <rect x="340" y="70" width="15" height="40" fill="#6B7280" stroke="#374151" stroke-width="2"/>
+  <text x="345" y="158" font-size="9" fill="#374151">轴肩</text>
+  <!-- 旋转箭头 -->
+  <path d="M150 50 A30 30 0 0 1 150 110" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#10B981"/>
+    </marker>
+  </defs>
+  <text x="130" y="45" font-size="9" fill="#10B981">旋转</text>
+</svg>
+""",
                 "design_points": [
                     "轴与轴承内圈采用过渡配合或轻过盈配合（如 j5、k5、m5）",
                     "轴承座孔与轴承外圈采用间隙配合或过渡配合（如 J7、H7）",
@@ -36,44 +72,101 @@ MECHANICAL_CASES = [
                 ],
             },
             {
-                "name": "深沟球轴承（外圈旋转）安装",
-                "description": "轮毂旋转、轴固定的场合，如汽车轮毂、皮带轮等。",
+                "name": "半圆键连接",
+                "description": "适用于锥形轴端连接，键在轴槽中可摆动以适应轮毂斜度。",
+                "svg_diagram": """
+<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- 轴 -->
+  <rect x="50" y="75" width="300" height="30" fill="#6B7280" stroke="#374151" stroke-width="2"/>
+  <text x="200" y="97" font-size="11" fill="#fff" text-anchor="middle">轴</text>
+  <!-- 键槽 -->
+  <path d="M160 75 Q160 95 180 95 Q200 95 200 75" fill="#FCD34D" stroke="#F59E0B" stroke-width="2"/>
+  <!-- 键 -->
+  <path d="M165 75 Q165 85 180 85 Q195 85 195 75" fill="#FBBF24" stroke="#D97706" stroke-width="1.5"/>
+  <text x="180" y="72" font-size="9" fill="#92400E" text-anchor="middle">键</text>
+  <!-- 键槽标注 -->
+  <line x1="165" y1="110" x2="165" y2="130" stroke="#EF4444" stroke-width="1.5"/>
+  <line x1="195" y1="110" x2="195" y2="130" stroke="#EF4444" stroke-width="1.5"/>
+  <line x1="180" y1="130" x2="180" y2="145" stroke="#EF4444" stroke-width="1.5"/>
+  <line x1="175" y1="145" x2="185" y2="145" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="180" y="160" font-size="9" fill="#EF4444" text-anchor="middle">b (键宽)</text>
+  <!-- 尺寸标注 -->
+  <text x="70" y="60" font-size="10" fill="#374151">t₁（轴槽深）</text>
+  <text x="250" y="60" font-size="10" fill="#374151">键宽 b N9</text>
+  <!-- 公差带标注 -->
+  <rect x="165" y="140" width="30" height="8" fill="#FEE2E2" stroke="#EF4444" stroke-width="1"/>
+  <text x="180" y="170" font-size="8" fill="#EF4444" text-anchor="middle">N9</text>
+</svg>
+""",
                 "design_points": [
-                    "轴与轴承内圈采用间隙配合或过渡配合（如 g6、h6）",
-                    "轴承座孔与轴承外圈采用过盈配合（如 M7、N7、P7）",
-                    "内圈需轴向固定（卡簧、挡圈或螺母）",
-                    "外圈过盈量需考虑工作温度下膨胀的影响",
+                    "键宽与轴槽宽配合同平键（N9/h9）",
+                    "轴槽深度按 GB/T 1098 选取",
+                    "半圆键的半径 R 需与轴槽匹配",
+                    "适用于轻载、低速传动场合",
                 ],
                 "tolerance_values": [
-                    {"部位": "轴（轴承位）", "公差带": "g6 / h6", "说明": "内圈可轴向游动或固定"},
-                    {"部位": "轴承座孔", "公差带": "M7 / N7", "说明": "IT7级，外圈过盈配合"},
-                    {"部位": "配合面粗糙度（轴）", "公差带": "Ra 1.6", "说明": "精车或磨削"},
-                    {"部位": "配合面粗糙度（孔）", "公差带": "Ra 0.8", "说明": "磨削加工"},
+                    {"部位": "键宽 b", "公差带": "h9", "说明": "标准件"},
+                    {"部位": "轴槽宽 b", "公差带": "N9", "说明": "过渡配合"},
+                    {"部位": "轮毂槽宽 b", "公差带": "Js9 / D10", "说明": "一般/较松"},
+                    {"部位": "键槽对称度", "公差带": "0.02~0.04mm", "说明": "视键宽"},
                 ],
                 "common_mistakes": [
-                    "内外圈配合选反，导致轴承无法正常工作",
-                    "外圈过盈量过大，装配困难且可能损伤轴承",
+                    "用于重载场合（半圆键承载能力有限）",
+                    "轴槽深度不够，键容易脱落",
                 ],
             },
             {
-                "name": "圆锥滚子轴承安装",
-                "description": "可承受径向和轴向联合载荷，常成对使用，需调整游隙。",
+                "name": "O形密封圈沟槽设计",
+                "description": "O形圈是最常见的密封方式，沟槽尺寸精度直接影响密封效果。",
+                "svg_diagram": """
+<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- 缸体/孔 -->
+  <rect x="80" y="50" width="240" height="80" fill="#E5E7EB" stroke="#374151" stroke-width="2"/>
+  <!-- 沟槽 -->
+  <rect x="120" y="65" width="160" height="50" fill="#93C5FD" stroke="#3B82F6" stroke-width="2"/>
+  <!-- O形圈 -->
+  <ellipse cx="200" cy="90" rx="55" ry="20" fill="#FCD34D" stroke="#F59E0B" stroke-width="2"/>
+  <!-- 压缩变形 -->
+  <ellipse cx="200" cy="90" rx="45" ry="15" fill="#FEF3C7" stroke="#FBBF24" stroke-width="1" stroke-dasharray="3,2"/>
+  <!-- 标注 -->
+  <line x1="120" y1="130" x2="120" y2="155" stroke="#EF4444" stroke-width="1.5"/>
+  <line x1="280" y1="130" x2="280" y2="155" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="200" y="165" font-size="9" fill="#EF4444" text-anchor="middle">B（沟槽宽度）</text>
+  <line x1="310" y1="65" x2="350" y2="65" stroke="#10B981" stroke-width="1.5"/>
+  <line x1="310" y1="115" x2="350" y2="115" stroke="#10B981" stroke-width="1.5"/>
+  <line x1="345" y1="65" x2="345" y2="115" stroke="#10B981" stroke-width="1.5"/>
+  <text x="355" y="95" font-size="9" fill="#10B981">H</text>
+  <text x="355" y="105" font-size="9" fill="#10B981">(沟槽深度)</text>
+  <!-- 说明 -->
+  <text x="100" y="45" font-size="9" fill="#374151">缸体/孔</text>
+  <text x="185" y="100" font-size="9" fill="#92400E" text-anchor="middle">O形圈</text>
+  <!-- 压缩率标注 -->
+  <path d="M145 35 L145 50" stroke="#8B5CF6" stroke-width="1.5"/>
+  <path d="M145 50 L155 50" stroke="#8B5CF6" stroke-width="1.5"/>
+  <path d="M255 35 L255 50" stroke="#8B5CF6" stroke-width="1.5"/>
+  <path d="M255 50 L245 50" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="200" y="32" font-size="8" fill="#8B5CF6" text-anchor="middle">压缩量 15%~25%</text>
+</svg>
+""",
                 "design_points": [
-                    "轴与内圈配合：一般 k5、m5（视载荷大小）",
-                    "座孔与外圈配合：一般 H7（外圈可调位）",
-                    "必须通过垫片或螺母调整轴承游隙/预紧力",
-                    "两轴承间距不宜过大，避免轴热膨胀后卡死",
-                    "轴向定位通常采用一端固定、一端游动的结构",
+                    "沟槽深度 H 按密封圈压缩率 15%~25% 计算",
+                    "沟槽宽度 B 一般为密封圈线径 d 的 1.3~1.5 倍",
+                    "沟槽底面和侧面粗糙度 Ra 0.8~1.6（太光滑会打滑）",
+                    "沟槽圆角 R0.1~0.3，避免切伤密封圈",
+                    "配合面（轴或孔）粗糙度 Ra 0.4~0.8",
                 ],
                 "tolerance_values": [
-                    {"部位": "轴（轴承位）", "公差带": "k5 / m5", "说明": "视载荷选择"},
-                    {"部位": "轴承座孔", "公差带": "H7", "说明": "外圈可调位"},
-                    {"部位": "轴肩端面跳动", "公差带": "≤0.01mm", "说明": "圆锥轴承对端跳更敏感"},
-                    {"部位": "调整垫片厚度公差", "公差带": "±0.005mm", "说明": "精密研磨垫片"},
+                    {"部位": "沟槽深度 H", "公差带": "+0.05/0", "说明": "控制压缩率"},
+                    {"部位": "沟槽宽度 B", "公差带": "+0.1/0", "说明": "保证密封圈有膨胀空间"},
+                    {"部位": "沟槽底面粗糙度", "公差带": "Ra 1.6", "说明": "车削即可"},
+                    {"部位": "密封配合面粗糙度", "公差带": "Ra 0.4~0.8", "说明": "磨削"},
+                    {"部位": "沟槽圆角", "公差带": "R0.1~0.3", "说明": "避免切伤O圈"},
                 ],
                 "common_mistakes": [
-                    "未设计游隙调整结构，导致轴承卡死或游隙过大",
-                    "忽略轴向载荷方向，轴承安装方向错误",
+                    "沟槽太深，压缩量不够导致泄漏",
+                    "沟槽太浅，压缩量过大导致O圈永久变形",
+                    "沟槽表面太粗糙，划伤密封圈",
+                    "忽略温度对密封圈材料硬度的影响",
                 ],
             },
         ],
@@ -86,6 +179,37 @@ MECHANICAL_CASES = [
             {
                 "name": "普通平键连接（圆头/平头）",
                 "description": "最常用的轴毂连接方式，通过键传递扭矩，键两侧面为工作面。",
+                "svg_diagram": """
+<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- 轴 -->
+  <rect x="100" y="75" width="200" height="30" fill="#6B7280" stroke="#374151" stroke-width="2"/>
+  <text x="200" y="97" font-size="11" fill="#fff" text-anchor="middle">轴</text>
+  <!-- 轮毂 -->
+  <rect x="150" y="60" width="100" height="60" fill="#93C5FD" stroke="#3B82F6" stroke-width="2" rx="3"/>
+  <text x="200" y="87" font-size="10" fill="#1E40AF" text-anchor="middle">轮毂</text>
+  <!-- 键槽（轴上） -->
+  <rect x="145" y="95" width="110" height="10" fill="#FCD34D" stroke="#F59E0B" stroke-width="1.5"/>
+  <!-- 键 -->
+  <rect x="150" y="93" width="100" height="14" fill="#FBBF24" stroke="#D97706" stroke-width="2" rx="2"/>
+  <text x="200" y="103" font-size="9" fill="#92400E" text-anchor="middle">平键</text>
+  <!-- 键槽（毂上） -->
+  <rect x="155" y="60" width="90" height="10" fill="#FCD34D" stroke="#F59E0B" stroke-width="1.5"/>
+  <!-- 尺寸标注 -->
+  <line x1="145" y1="130" x2="145" y2="155" stroke="#EF4444" stroke-width="1.5"/>
+  <line x1="255" y1="130" x2="255" y2="155" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="200" y="168" font-size="9" fill="#EF4444" text-anchor="middle">b（键宽）</text>
+  <!-- 公差标注 -->
+  <text x="180" y="145" font-size="8" fill="#10B981">N9/h9</text>
+  <!-- 扭矩方向 -->
+  <path d="M80 60 Q60 90 80 120" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrow1)"/>
+  <text x="45" y="90" font-size="9" fill="#10B981">扭矩</text>
+  <defs>
+    <marker id="arrow1" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#10B981"/>
+    </marker>
+  </defs>
+</svg>
+""",
                 "design_points": [
                     "键宽与键槽宽采用过渡配合或较紧间隙配合（如 N9/js9）",
                     "键高与键槽深采用较松配合（键在槽中不卡死）",
@@ -108,161 +232,6 @@ MECHANICAL_CASES = [
                     "忘记标注键槽深度尺寸及公差",
                 ],
             },
-            {
-                "name": "半圆键连接",
-                "description": "适用于锥形轴端连接，键在轴槽中可摆动以适应轮毂斜度。",
-                "design_points": [
-                    "键宽与轴槽宽配合同平键（N9/h9）",
-                    "轴槽深度按 GB/T 1098 选取",
-                    "半圆键的半径 R 需与轴槽匹配",
-                    "适用于轻载、低速传动场合",
-                ],
-                "tolerance_values": [
-                    {"部位": "键宽 b", "公差带": "h9", "说明": "标准件"},
-                    {"部位": "轴槽宽 b", "公差带": "N9", "说明": "过渡配合"},
-                    {"部位": "轮毂槽宽 b", "公差带": "Js9 / D10", "说明": "一般/较松"},
-                    {"部位": "键槽对称度", "公差带": "0.02~0.04mm", "说明": "视键宽"},
-                ],
-                "common_mistakes": [
-                    "用于重载场合（半圆键承载能力有限）",
-                    "轴槽深度不够，键容易脱落",
-                ],
-            },
-            {
-                "name": "花键连接（矩形花键）",
-                "description": "多齿同时受力，承载能力高，定心精度好，用于重载传动。",
-                "design_points": [
-                    "矩形花键采用小径 d 定心（GB/T 1144）",
-                    "定心直径采用较高精度配合（如 H7/f7）",
-                    "键齿宽采用过渡配合或间隙配合",
-                    "花键的位置度公差或对称度公差需标注",
-                    "大径和小径的圆柱度公差需控制",
-                ],
-                "tolerance_values": [
-                    {"部位": "内花键小径（定心）", "公差带": "H7", "说明": "IT7级，定心直径"},
-                    {"部位": "外花键小径（定心）", "公差带": "f7 / g7", "说明": "滑动/固定"},
-                    {"部位": "键齿宽（内花键）", "公差带": "H9 / H11", "说明": "一般/较松"},
-                    {"部位": "键齿宽（外花键）", "公差带": "d9 / f9", "说明": "对应配合"},
-                    {"部位": "齿面粗糙度", "公差带": "Ra 1.6~3.2", "说明": "铣齿/拉齿"},
-                    {"部位": "位置度公差", "公差带": "0.015~0.03mm", "说明": "视精度要求"},
-                ],
-                "common_mistakes": [
-                    "未明确定心方式（小径/大径/齿侧）",
-                    "花键长度过长，导致齿向误差累积",
-                    "位置度公差过严，加工成本急剧增加",
-                ],
-            },
-        ],
-    },
-    # ---------- 联轴器 ----------
-    {
-        "category": "联轴器安装",
-        "icon": "🔗",
-        "cases": [
-            {
-                "name": "刚性联轴器安装",
-                "description": "用于两轴严格对中的场合，无补偿能力。",
-                "design_points": [
-                    "联轴器与轴的配合一般采用 H7/js6 或 H7/k6",
-                    "两轴的同轴度误差应控制在 0.01~0.03mm 以内",
-                    "联轴器端面跳动 ≤ 0.02mm",
-                    "需同时检查径向跳动和角向偏差",
-                ],
-                "tolerance_values": [
-                    {"部位": "轴（联轴器位）", "公差带": "js6 / k6", "说明": "过渡配合"},
-                    {"部位": "联轴器孔", "公差带": "H7", "说明": "IT7级"},
-                    {"部位": "两轴同轴度", "公差带": "≤0.03mm", "说明": "安装后检测"},
-                    {"部位": "端面跳动", "公差带": "≤0.02mm", "说明": "安装后检测"},
-                ],
-                "common_mistakes": [
-                    "对中精度不够，导致轴系振动",
-                    "螺栓预紧力不均匀，导致联轴器偏斜",
-                ],
-            },
-        ],
-    },
-    # ---------- 密封结构 ----------
-    {
-        "category": "密封结构",
-        "icon": "🛡️",
-        "cases": [
-            {
-                "name": "O形密封圈沟槽设计",
-                "description": "O形圈是最常见的密封方式，沟槽尺寸精度直接影响密封效果。",
-                "design_points": [
-                    "沟槽深度 H 按密封圈压缩率 15%~25% 计算",
-                    "沟槽宽度 B 一般为密封圈线径 d 的 1.3~1.5 倍",
-                    "沟槽底面和侧面粗糙度 Ra 0.8~1.6（太光滑会打滑）",
-                    "沟槽圆角 R0.1~0.3，避免切伤密封圈",
-                    "配合面（轴或孔）粗糙度 Ra 0.4~0.8",
-                ],
-                "tolerance_values": [
-                    {"部位": "沟槽深度 H", "公差带": "+0.05/0", "说明": "控制压缩率"},
-                    {"部位": "沟槽宽度 B", "公差带": "+0.1/0", "说明": "保证密封圈有膨胀空间"},
-                    {"部位": "沟槽底面粗糙度", "公差带": "Ra 1.6", "说明": "车削即可"},
-                    {"部位": "密封配合面粗糙度", "公差带": "Ra 0.4~0.8", "说明": "磨削"},
-                    {"部位": "沟槽圆角", "公差带": "R0.1~0.3", "说明": "避免切伤O圈"},
-                ],
-                "common_mistakes": [
-                    "沟槽太深，压缩量不够导致泄漏",
-                    "沟槽太浅，压缩量过大导致O圈永久变形",
-                    "沟槽表面太粗糙，划伤密封圈",
-                    "忽略温度对密封圈材料硬度的影响",
-                ],
-            },
-            {
-                "name": "骨架油封安装",
-                "description": "旋转轴密封，广泛用于减速器、电机等。",
-                "design_points": [
-                    "油封内径比轴径小 0.2~0.5mm（过盈量）",
-                    "轴的表面硬度 HRC 30~55，表面粗糙度 Ra 0.2~0.8",
-                    "轴表面需磨削加工，不允许有螺旋状加工纹路",
-                    "油封座孔公差一般 H8",
-                    "轴的倒角 15°~30°，便于油封导入",
-                ],
-                "tolerance_values": [
-                    {"部位": "轴（油封位）", "公差带": "h11", "说明": "轴径公差"},
-                    {"部位": "轴表面粗糙度", "公差带": "Ra 0.4~0.8", "说明": "磨削"},
-                    {"部位": "轴表面硬度", "公差带": "HRC 30~55", "说明": "防止磨损"},
-                    {"部位": "油封座孔", "公差带": "H8", "说明": "IT8级"},
-                    {"部位": "轴导入倒角", "公差带": "15°~30°", "说明": "便于装配"},
-                ],
-                "common_mistakes": [
-                    "轴表面有螺旋纹，导致油封泄漏",
-                    "轴硬度不够，油封很快磨损",
-                    "装配时未使用专用工具，油封唇口翻边",
-                ],
-            },
-        ],
-    },
-    # ---------- 螺纹连接 ----------
-    {
-        "category": "螺纹连接",
-        "icon": "🔩",
-        "cases": [
-            {
-                "name": "螺栓连接（一般场合）",
-                "description": "最常见的可拆卸连接方式。",
-                "design_points": [
-                    "螺栓孔径一般比螺栓公称直径大 1~2mm（间隙配合）",
-                    "精密定位场合可采用铰制孔螺栓（H7/r6 或 H7/n6）",
-                    "螺栓孔位置度公差视精度要求取 0.1~0.5mm",
-                    "被连接件接触面粗糙度 Ra 3.2~6.3",
-                    "法兰连接螺栓需按对角顺序均匀预紧",
-                ],
-                "tolerance_values": [
-                    {"部位": "螺栓孔（一般）", "公差带": "D10~D12", "说明": "间隙配合"},
-                    {"部位": "螺栓孔（铰制）", "公差带": "H7", "说明": "精密定位"},
-                    {"部位": "铰制螺栓杆", "公差带": "r6 / n6", "说明": "过盈/过渡配合"},
-                    {"部位": "孔位置度", "公差带": "0.1~0.5mm", "说明": "视精度要求"},
-                    {"部位": "接触面粗糙度", "公差带": "Ra 3.2~6.3", "说明": "铣削/车削"},
-                ],
-                "common_mistakes": [
-                    "螺栓孔位置度超差，导致螺栓无法穿入",
-                    "铰制孔螺栓未标注配合公差",
-                    "法兰螺栓预紧顺序错误，导致密封面不平",
-                ],
-            },
         ],
     },
     # ---------- 销连接 ----------
@@ -273,6 +242,31 @@ MECHANICAL_CASES = [
             {
                 "name": "圆柱销定位连接",
                 "description": "用于零件精确定位，承受较小剪切力。",
+                "svg_diagram": """
+<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- 上零件 -->
+  <rect x="100" y="60" width="200" height="40" fill="#93C5FD" stroke="#3B82F6" stroke-width="2"/>
+  <text x="200" y="84" font-size="11" fill="#1E40AF" text-anchor="middle">上零件</text>
+  <!-- 下零件 -->
+  <rect x="100" y="100" width="200" height="40" fill="#6B7280" stroke="#374151" stroke-width="2"/>
+  <text x="200" y="124" font-size="11" fill="#fff" text-anchor="middle">下零件</text>
+  <!-- 销孔 -->
+  <circle cx="200" cy="100" r="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="2"/>
+  <circle cx="200" cy="100" r="8" fill="#FCD34D" stroke="#F59E0B" stroke-width="1.5"/>
+  <!-- 销 -->
+  <rect x="192" y="50" width="16" height="100" fill="#FBBF24" stroke="#D97706" stroke-width="2" rx="2"/>
+  <text x="200" y="45" font-size="9" fill="#92400E" text-anchor="middle">圆柱销</text>
+  <text x="200" y="165" font-size="9" fill="#92400E" text-anchor="middle">m6/H7</text>
+  <!-- 定位箭头 -->
+  <line x1="250" y1="80" x2="280" y2="50" stroke="#10B981" stroke-width="1.5"/>
+  <text x="285" y="48" font-size="9" fill="#10B981">定位销</text>
+  <line x1="250" y1="120" x2="280" y2="150" stroke="#10B981" stroke-width="1.5"/>
+  <text x="285" y="155" font-size="9" fill="#10B981">配钻铰</text>
+  <!-- 圆角标注 -->
+  <path d="M185 110 A8 8 0 0 0 185 125" fill="none" stroke="#EF4444" stroke-width="1"/>
+  <text x="175" y="140" font-size="8" fill="#EF4444">R0.3</text>
+</svg>
+""",
                 "design_points": [
                     "销孔需配钻铰，保证配合精度",
                     "一般配合：销 m6 / 孔 H7（过渡配合）",
@@ -292,25 +286,6 @@ MECHANICAL_CASES = [
                     "销孔粗糙度不够，影响配合质量",
                 ],
             },
-            {
-                "name": "圆锥销定位连接",
-                "description": "可多次拆装而不降低定位精度，锥度 1:50。",
-                "design_points": [
-                    "圆锥销锥度 1:50（标准）",
-                    "销孔需配钻铰，用销反复研配直至贴合",
-                    "圆锥销配合面需达到 80% 以上接触面积",
-                    "适用于需要频繁拆装的定位场合",
-                ],
-                "tolerance_values": [
-                    {"部位": "圆锥销", "公差带": "标准件", "说明": "1:50 锥度"},
-                    {"部位": "销孔", "公差带": "配铰", "说明": "接触面积≥80%"},
-                    {"部位": "销孔粗糙度", "公差带": "Ra 0.8", "说明": "铰削"},
-                ],
-                "common_mistakes": [
-                    "未配钻铰，直接加工锥孔导致配合不良",
-                    "圆锥销敲入过深，难以拆卸",
-                ],
-            },
         ],
     },
     # ---------- 齿轮传动 ----------
@@ -321,6 +296,45 @@ MECHANICAL_CASES = [
             {
                 "name": "圆柱齿轮轴系安装",
                 "description": "齿轮在轴上的安装，需保证齿轮精度和传动平稳性。",
+                "svg_diagram": """
+<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- 轴 -->
+  <rect x="80" y="85" width="240" height="20" fill="#6B7280" stroke="#374151" stroke-width="2"/>
+  <text x="200" y="100" font-size="11" fill="#fff" text-anchor="middle">轴</text>
+  <!-- 齿轮 -->
+  <circle cx="200" cy="90" r="50" fill="#93C5FD" stroke="#3B82F6" stroke-width="2"/>
+  <circle cx="200" cy="90" r="20" fill="#6B7280" stroke="#374151" stroke-width="2"/>
+  <!-- 齿轮齿 -->
+  <g fill="#93C5FD" stroke="#3B82F6" stroke-width="1.5">
+    <rect x="196" y="38" width="8" height="15"/>
+    <rect x="196" y="127" width="8" height="15"/>
+    <rect x="148" y="86" width="15" height="8"/>
+    <rect x="237" y="86" width="15" height="8"/>
+    <rect x="158" y="50" width="12" height="8" transform="rotate(45 164 54)"/>
+    <rect x="230" y="50" width="12" height="8" transform="rotate(-45 236 54)"/>
+    <rect x="158" y="122" width="12" height="8" transform="rotate(-45 164 126)"/>
+    <rect x="230" y="122" width="12" height="8" transform="rotate(45 236 126)"/>
+  </g>
+  <!-- 键槽 -->
+  <rect x="170" y="100" width="60" height="8" fill="#FCD34D" stroke="#F59E0B" stroke-width="1"/>
+  <!-- 轴承 -->
+  <rect x="100" y="75" width="30" height="30" fill="#FCD34D" stroke="#F59E0B" stroke-width="2" rx="3"/>
+  <rect x="270" y="75" width="30" height="30" fill="#FCD34D" stroke="#F59E0B" stroke-width="2" rx="3"/>
+  <!-- 标注 -->
+  <text x="200" y="20" font-size="10" fill="#1E40AF" text-anchor="middle">圆柱齿轮</text>
+  <text x="200" y="160" font-size="9" fill="#374151" text-anchor="middle">齿轮孔 H7 / 轴 k5-m5</text>
+  <text x="115" y="155" font-size="9" fill="#92400E">轴承</text>
+  <text x="285" y="155" font-size="9" fill="#92400E">轴承</text>
+  <!-- 扭矩方向 -->
+  <path d="M310 60 A25 25 0 0 1 310 120" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrow2)"/>
+  <text x="320" y="90" font-size="9" fill="#10B981">扭矩</text>
+  <defs>
+    <marker id="arrow2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#10B981"/>
+    </marker>
+  </defs>
+</svg>
+""",
                 "design_points": [
                     "齿轮与轴配合视工况：一般 k5/m5（固定）或 H7/f7（滑动）",
                     "齿轮基准端面跳动 ≤ 0.015~0.03mm（视精度等级）",
@@ -351,6 +365,36 @@ MECHANICAL_CASES = [
             {
                 "name": "平导轨配合",
                 "description": "机床和精密设备中常见的直线导向结构。",
+                "svg_diagram": """
+<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- 下导轨（固定） -->
+  <rect x="50" y="120" width="300" height="20" fill="#E5E7EB" stroke="#374151" stroke-width="2"/>
+  <text x="200" y="135" font-size="11" fill="#374151" text-anchor="middle">下导轨</text>
+  <!-- 滑动块 -->
+  <rect x="100" y="70" width="200" height="45" fill="#93C5FD" stroke="#3B82F6" stroke-width="2" rx="3"/>
+  <text x="200" y="97" font-size="11" fill="#1E40AF" text-anchor="middle">滑动块</text>
+  <!-- 镶条（调整间隙） -->
+  <rect x="290" y="115" width="20" height="15" fill="#FCD34D" stroke="#F59E0B" stroke-width="2"/>
+  <text x="300" y="125" font-size="8" fill="#92400E" text-anchor="middle">镶</text>
+  <!-- 润滑油槽 -->
+  <rect x="130" y="90" width="40" height="3" fill="#6B7280"/>
+  <rect x="180" y="90" width="40" height="3" fill="#6B7280"/>
+  <rect x="230" y="90" width="40" height="3" fill="#6B7280"/>
+  <!-- 运动方向 -->
+  <line x1="50" y1="55" x2="350" y2="55" stroke="#10B981" stroke-width="2" stroke-dasharray="8,4"/>
+  <path d="M340 45 L350 55 L340 65" fill="none" stroke="#10B981" stroke-width="2"/>
+  <text x="200" y="45" font-size="9" fill="#10B981" text-anchor="middle">运动方向</text>
+  <!-- 间隙标注 -->
+  <line x1="100" y1="108" x2="100" y2="125" stroke="#EF4444" stroke-width="1.5"/>
+  <line x1="300" y1="108" x2="300" y2="125" stroke="#EF4444" stroke-width="1.5"/>
+  <line x1="95" y1="120" x2="105" y2="120" stroke="#EF4444" stroke-width="1.5"/>
+  <line x1="295" y1="120" x2="305" y2="120" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="200" y="160" font-size="9" fill="#EF4444" text-anchor="middle">配合间隙 0.01~0.05mm</text>
+  <!-- 直线度标注 -->
+  <path d="M50 145 Q200 140 350 145" fill="none" stroke="#8B5CF6" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="200" y="170" font-size="8" fill="#8B5CF6" text-anchor="middle">导轨直线度 0.01~0.05mm/m</text>
+</svg>
+""",
                 "design_points": [
                     "导轨面直线度公差按精度等级选取（一般 0.01~0.05mm/m）",
                     "导轨面平行度公差控制在 0.01~0.03mm 以内",
@@ -452,16 +496,6 @@ POKAYOKE_CHECKLIST = [
                     {"check": "基准面的加工精度是否高于被测要素", "level": "必须检查", "tip": "基准面本身精度不够会导致测量结果不可靠"},
                 ],
             },
-            {
-                "name": "公差标注规范性",
-                "description": "检查公差标注是否符合国标规范，避免歧义。",
-                "items": [
-                    {"check": "形位公差是否被尺寸公差自然控制（避免冗余标注）", "level": "推荐", "tip": "如圆柱面的圆柱度已被尺寸公差控制在一定范围内"},
-                    {"check": "未注公差是否按 GB/T 1804 或 ISO 2768 统一规定", "level": "推荐", "tip": "图样技术要求中应注明未注公差等级"},
-                    {"check": "形位公差的公差值是否大于或等于尺寸公差", "level": "必须检查", "tip": "形位公差一般不大于尺寸公差，否则无意义"},
-                    {"check": "是否标注了必要的表面粗糙度要求", "level": "推荐", "tip": "配合面、密封面、基准面必须标注粗糙度"},
-                ],
-            },
         ],
     },
     {
@@ -491,3 +525,51 @@ POKAYOKE_CHECKLIST = [
         ],
     },
 ]
+
+
+# ==================== 内置材料库 ====================
+MATERIAL_PROPERTIES = [
+    # 碳钢及合金钢
+    {"category": "碳钢及合金钢", "material": "Q235A", "density": 7.85, "elastic_modulus": 206, "yield_strength": 235, "tensile_strength": 375, "alpha": 11.7, "poisson_ratio": 0.30, "note": "普通结构钢，最常用"},
+    {"category": "碳钢及合金钢", "material": "Q355B", "density": 7.85, "elastic_modulus": 206, "yield_strength": 355, "tensile_strength": 490, "alpha": 11.7, "poisson_ratio": 0.30, "note": "低合金高强度钢"},
+    {"category": "碳钢及合金钢", "material": "45钢", "density": 7.85, "elastic_modulus": 206, "yield_strength": 355, "tensile_strength": 600, "alpha": 11.6, "poisson_ratio": 0.30, "note": "优质碳素结构钢，调质后使用"},
+    {"category": "碳钢及合金钢", "material": "40Cr", "density": 7.85, "elastic_modulus": 211, "yield_strength": 785, "tensile_strength": 980, "alpha": 11.0, "poisson_ratio": 0.30, "note": "合金结构钢，调质处理"},
+    {"category": "碳钢及合金钢", "material": "GCr15", "density": 7.80, "elastic_modulus": 219, "yield_strength": 518, "tensile_strength": 725, "alpha": 13.0, "poisson_ratio": 0.30, "note": "轴承钢，滚动轴承专用"},
+    {"category": "碳钢及合金钢", "material": "20CrMnTi", "density": 7.80, "elastic_modulus": 207, "yield_strength": 835, "tensile_strength": 1080, "alpha": 11.0, "poisson_ratio": 0.30, "note": "渗碳齿轮钢"},
+    {"category": "碳钢及合金钢", "material": "42CrMo", "density": 7.85, "elastic_modulus": 212, "yield_strength": 930, "tensile_strength": 1080, "alpha": 11.2, "poisson_ratio": 0.30, "note": "高强度合金钢，大型齿轮/轴"},
+    # 灰铸铁
+    {"category": "灰铸铁", "material": "HT200", "density": 7.20, "elastic_modulus": 130, "yield_strength": 200, "tensile_strength": 200, "alpha": 10.5, "poisson_ratio": 0.25, "note": "普通灰铸铁，中等载荷零件"},
+    {"category": "灰铸铁", "material": "HT250", "density": 7.25, "elastic_modulus": 135, "yield_strength": 250, "tensile_strength": 250, "alpha": 10.5, "poisson_ratio": 0.25, "note": "较高强度灰铸铁"},
+    {"category": "灰铸铁", "material": "HT300", "density": 7.30, "elastic_modulus": 145, "yield_strength": 300, "tensile_strength": 300, "alpha": 10.5, "poisson_ratio": 0.25, "note": "高强度灰铸铁，床身/箱体"},
+    # 球墨铸铁
+    {"category": "球墨铸铁", "material": "QT400-18", "density": 7.10, "elastic_modulus": 170, "yield_strength": 250, "tensile_strength": 400, "alpha": 11.0, "poisson_ratio": 0.28, "note": "高韧性球铁"},
+    {"category": "球墨铸铁", "material": "QT500-7", "density": 7.10, "elastic_modulus": 175, "yield_strength": 320, "tensile_strength": 500, "alpha": 11.0, "poisson_ratio": 0.28, "note": "中等强度球铁"},
+    {"category": "球墨铸铁", "material": "QT600-3", "density": 7.10, "elastic_modulus": 180, "yield_strength": 370, "tensile_strength": 600, "alpha": 11.0, "poisson_ratio": 0.28, "note": "高强度球铁，可替代锻钢"},
+    # 铝合金
+    {"category": "铝合金", "material": "6061-T6", "density": 2.70, "elastic_modulus": 69, "yield_strength": 240, "tensile_strength": 260, "alpha": 23.6, "poisson_ratio": 0.33, "note": "常用铝合金，可热处理强化"},
+    {"category": "铝合金", "material": "7075-T6", "density": 2.81, "elastic_modulus": 72, "yield_strength": 503, "tensile_strength": 572, "alpha": 23.4, "poisson_ratio": 0.33, "note": "高强度航空铝合金"},
+    {"category": "铝合金", "material": "ZL104", "density": 2.65, "elastic_modulus": 70, "yield_strength": 170, "tensile_strength": 220, "alpha": 22.0, "poisson_ratio": 0.33, "note": "铸造铝合金"},
+    # 铜合金
+    {"category": "铜合金", "material": "H62", "density": 8.43, "elastic_modulus": 100, "yield_strength": 380, "tensile_strength": 380, "alpha": 20.2, "poisson_ratio": 0.35, "note": "普通黄铜，H62为半硬态"},
+    {"category": "铜合金", "material": "HPb59-1", "density": 8.50, "elastic_modulus": 100, "yield_strength": 420, "tensile_strength": 450, "alpha": 20.5, "poisson_ratio": 0.35, "note": "铅黄铜，易切削"},
+    {"category": "铜合金", "material": "QSn6.5-0.1", "density": 8.80, "elastic_modulus": 110, "yield_strength": 545, "tensile_strength": 635, "alpha": 18.2, "poisson_ratio": 0.35, "note": "锡青铜，弹性元件"},
+    {"category": "铜合金", "material": "QA19-2", "density": 7.60, "elastic_modulus": 110, "yield_strength": 450, "tensile_strength": 600, "alpha": 17.0, "poisson_ratio": 0.35, "note": "铝青铜，高强度耐磨"},
+    # 不锈钢
+    {"category": "不锈钢", "material": "304", "density": 8.00, "elastic_modulus": 193, "yield_strength": 205, "tensile_strength": 520, "alpha": 17.3, "poisson_ratio": 0.29, "note": "奥氏体不锈钢，食品/化工"},
+    {"category": "不锈钢", "material": "316", "density": 8.00, "elastic_modulus": 193, "yield_strength": 205, "tensile_strength": 530, "alpha": 16.0, "poisson_ratio": 0.29, "note": "耐腐蚀不锈钢，耐海水"},
+    {"category": "不锈钢", "material": "440C", "density": 7.75, "elastic_modulus": 200, "yield_strength": 415, "tensile_strength": 760, "alpha": 10.5, "poisson_ratio": 0.28, "note": "马氏体不锈钢，轴承/刀具"},
+    # 钛合金
+    {"category": "钛合金", "material": "TC4 (Ti-6Al-4V)", "density": 4.45, "elastic_modulus": 110, "yield_strength": 880, "tensile_strength": 950, "alpha": 9.0, "poisson_ratio": 0.34, "note": "航空钛合金，轻质高强"},
+    # 其他
+    {"category": "其他金属", "material": "ZG230-450", "density": 7.80, "elastic_modulus": 202, "yield_strength": 230, "tensile_strength": 450, "alpha": 12.0, "poisson_ratio": 0.30, "note": "铸钢，焊接结构件"},
+    {"category": "其他金属", "material": "W18Cr4V", "density": 8.70, "elastic_modulus": 220, "yield_strength": 350, "tensile_strength": 750, "alpha": 11.0, "poisson_ratio": 0.28, "note": "高速钢，刀具材料"},
+]
+
+# 单位说明
+MATERIAL_UNITS = {
+    "density": "g/cm³",
+    "elastic_modulus": "GPa",
+    "yield_strength": "MPa",
+    "tensile_strength": "MPa",
+    "alpha": "×10⁻⁶/°C",
+}

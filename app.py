@@ -56,23 +56,123 @@ PAGE_RENDERERS = {
 }
 
 
-def _build_sidebar_nav(current_page):
-    """构建侧边栏分类导航 HTML，全局只有一个选中项"""
-    # 隐藏 Streamlit 原生 radio 样式
-    hide_css = """
+def _apply_theme():
+    """应用深色/浅色主题"""
+    if "theme" not in st.session_state:
+        st.session_state.theme = "light"
+
+    theme = st.session_state.theme
+
+    if theme == "dark":
+        bg_color = "#0e1117"
+        text_color = "#fafafa"
+        secondary_bg = "#262730"
+        accent_color = "#4c8bf5"
+    else:
+        bg_color = "#ffffff"
+        text_color = "#31333f"
+        secondary_bg = "#f0f2f6"
+        accent_color = "#ff4b4b"
+
+    st.markdown(f"""
     <style>
-    [data-testid="stSidebar"] [data-testid="stRadio"] {
-        background: transparent;
-    }
-    [data-testid="stSidebar"] [data-testid="stRadio"] label > div {
-        background: transparent;
-        color: inherit;
-    }
+    /* 全局背景和文字颜色 */
+    .stApp, [data-testid="stMainBlockContainer"] {{
+        background-color: {bg_color} !important;
+    }}
+    [data-testid="stMainBlockContainer"] {{
+        color: {text_color};
+    }}
+    /* 侧边栏 */
+    [data-testid="stSidebar"] {{
+        background-color: {secondary_bg} !important;
+    }}
+    /* 主标题 */
+    .main-header {{
+        background: linear-gradient(135deg, {accent_color}, #764ba2);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        text-align: center;
+    }}
+    .main-header h1 {{
+        margin: 0 0 8px 0;
+        font-size: 28px;
+        font-weight: 700;
+    }}
+    .main-header p {{
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.9;
+    }}
+    /* 页脚 */
+    .disclaimer {{
+        background: {'#1a1a2e' if theme == 'dark' else '#fff3cd'};
+        color: {'#fafafa' if theme == 'dark' else '#856404'};
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-top: 40px;
+        text-align: center;
+        font-size: 13px;
+    }}
+    /* 按钮样式 */
+    .stButton > button {{
+        border-radius: 8px;
+    }}
+    /* 选项卡样式 */
+    .stTabs [data-baseweb="tab-list"] {{
+        gap: 8px;
+    }}
+    .stTabs [data-baseweb="tab"] {{
+        border-radius: 8px 8px 0 0;
+        padding: 8px 16px;
+    }}
+    /* 数据框样式 */
+    [data-testid="stDataFrame"] {{
+        border-radius: 8px;
+    }}
+    /* 指标卡片 */
+    [data-testid="stMetric"] {{
+        background: {secondary_bg};
+        padding: 16px;
+        border-radius: 10px;
+    }}
+    /* 滚动条 */
+    ::-webkit-scrollbar {{
+        width: 8px;
+    }}
+    ::-webkit-scrollbar-track {{
+        background: {secondary_bg};
+    }}
+    ::-webkit-scrollbar-thumb {{
+        background: {accent_color};
+        border-radius: 4px;
+    }}
     </style>
-    """
-    st.markdown(hide_css, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+
+
+def _build_sidebar_nav(current_page):
+    """构建侧边栏分类导航，全局只有一个选中项"""
+    # 初始化主题
+    _apply_theme()
 
     st.sidebar.markdown("## ⚙️ 导航菜单")
+
+    # 主题切换
+    theme_col1, theme_col2 = st.sidebar.columns([1, 1])
+    with theme_col1:
+        if st.button("☀️ 浅色", key="theme_light", use_container_width=True,
+                     type="primary" if st.session_state.get("theme") == "light" else "secondary"):
+            st.session_state.theme = "light"
+            st.rerun()
+    with theme_col2:
+        if st.button("🌙 深色", key="theme_dark", use_container_width=True,
+                     type="primary" if st.session_state.get("theme") == "dark" else "secondary"):
+            st.session_state.theme = "dark"
+            st.rerun()
+
     st.sidebar.markdown("---")
 
     for cat in NAV_CATEGORIES:
@@ -96,6 +196,10 @@ def main():
     if "current_page" not in st.session_state:
         st.session_state.current_page = "尺寸链计算"
 
+    # 初始化主题
+    if "theme" not in st.session_state:
+        st.session_state.theme = "light"
+
     # 构建侧边栏导航
     _build_sidebar_nav(st.session_state.current_page)
 
@@ -103,7 +207,7 @@ def main():
     st.markdown("""
     <div class="main-header">
         <h1>⚙️ 机械公差助手</h1>
-        <p>基于 GB/T 1800 / GB/T 1182 / ASME Y14.5 / ISO 2768 国家与国际标准 | v3.0</p>
+        <p>基于 GB/T 1800 / GB/T 1182 / ASME Y14.5 / ISO 2768 国家与国际标准 | v3.1</p>
     </div>
     """, unsafe_allow_html=True)
 

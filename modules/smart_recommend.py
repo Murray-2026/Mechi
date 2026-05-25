@@ -250,6 +250,17 @@ def render_smart_recommend_tab():
             )
             st.markdown(case_title_html, unsafe_allow_html=True)
 
+            # SVG结构示意图
+            if case.get("svg_diagram"):
+                svg_container = (
+                    '<div style="background:white;border:1px solid #e0e0e0;border-radius:10px;'
+                    'padding:16px;margin-bottom:16px;text-align:center;">'
+                    '<div style="font-size:14px;font-weight:bold;color:#374151;margin-bottom:12px;">📐 结构示意图</div>'
+                    '""" + case["svg_diagram"] + """'
+                    '</div>'
+                )
+                st.markdown(svg_container, unsafe_allow_html=True)
+
             # 设计要点
             with st.expander("📝 设计要点", expanded=True):
                 for i, point in enumerate(case["design_points"], 1):

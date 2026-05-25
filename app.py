@@ -68,11 +68,15 @@ def _apply_theme():
         text_color = "#fafafa"
         secondary_bg = "#262730"
         accent_color = "#4c8bf5"
+        button_bg = "#3d3d4a"
+        button_text = "#ffffff"
     else:
         bg_color = "#ffffff"
         text_color = "#31333f"
         secondary_bg = "#f0f2f6"
         accent_color = "#ff4b4b"
+        button_bg = "#ffffff"
+        button_text = "#31333f"
 
     st.markdown(f"""
     <style>
@@ -86,6 +90,26 @@ def _apply_theme():
     /* 侧边栏 */
     [data-testid="stSidebar"] {{
         background-color: {secondary_bg} !important;
+    }}
+    [data-testid="stSidebar"] .stMarkdown {{
+        color: {text_color};
+    }}
+    /* 侧边栏按钮 - 确保可见 */
+    [data-testid="stSidebar"] .stButton > button {{
+        background-color: {button_bg} !important;
+        color: {button_text} !important;
+        border: 1px solid {accent_color} !important;
+    }}
+    [data-testid="stSidebar"] .stButton > button:hover {{
+        background-color: {accent_color} !important;
+        color: white !important;
+    }}
+    /* 主题切换按钮特殊样式 */
+    [data-testid="stSidebar"] [key="theme_light"] > button,
+    [data-testid="stSidebar"] [key="theme_dark"] > button {{
+        background-color: {button_bg} !important;
+        color: {button_text} !important;
+        border: 2px solid {accent_color} !important;
     }}
     /* 主标题 */
     .main-header {{
@@ -149,6 +173,17 @@ def _apply_theme():
         background: {accent_color};
         border-radius: 4px;
     }}
+    /* 输入框样式 */
+    .stTextInput > div > div > input,
+    .stNumberInput > div > div > input,
+    .stSelectbox > div > div {{
+        background-color: {button_bg} !important;
+        color: {text_color} !important;
+    }}
+    /* 确保所有文字可见 */
+    p, span, label, .stMarkdown {{
+        color: {text_color} !important;
+    }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -160,18 +195,23 @@ def _build_sidebar_nav(current_page):
 
     st.sidebar.markdown("## ⚙️ 导航菜单")
 
-    # 主题切换
-    theme_col1, theme_col2 = st.sidebar.columns([1, 1])
-    with theme_col1:
-        if st.button("☀️ 浅色", key="theme_light", use_container_width=True,
-                     type="primary" if st.session_state.get("theme") == "light" else "secondary"):
-            st.session_state.theme = "light"
-            st.rerun()
-    with theme_col2:
-        if st.button("🌙 深色", key="theme_dark", use_container_width=True,
-                     type="primary" if st.session_state.get("theme") == "dark" else "secondary"):
-            st.session_state.theme = "dark"
-            st.rerun()
+    # 主题切换 - 使用 radio 避免按钮样式问题
+    theme_options = ["☀️ 浅色", "🌙 深色"]
+    current_theme_idx = 0 if st.session_state.get("theme") == "light" else 1
+    
+    selected_theme = st.sidebar.radio(
+        "主题模式",
+        theme_options,
+        index=current_theme_idx,
+        key="theme_selector",
+        label_visibility="collapsed"
+    )
+    
+    # 检测主题变化
+    new_theme = "light" if selected_theme == "☀️ 浅色" else "dark"
+    if new_theme != st.session_state.get("theme"):
+        st.session_state.theme = new_theme
+        st.rerun()
 
     st.sidebar.markdown("---")
 

@@ -3921,7 +3921,7 @@ def _search_glossary(glossary, query, current_standard):
 def render_standard_reference_tab():
     """渲染标准查阅选项卡 - 基于内置数据查询 GB/T 标准内容"""
     st.markdown("## 📚 国家标准查阅")
-    st.markdown("基于应用内置的标准数据，查询 GB/T 1800.1-2020、GB/T 1801-2009、GB/T 1184-1996 相关内容")
+    st.markdown("基于应用内置的标准数据，查询 GB/T 1800、GB/T 1182、GB/T 17851、GB/T 4249、GB/T 45683 等国家标准的完整内容")
 
     # 构建术语词典
     glossary = _build_glossary()
@@ -3932,9 +3932,13 @@ def render_standard_reference_tab():
         standard = st.selectbox(
             "选择标准",
             options=[
-                "GB/T 1800.1-2020 极限与配合",
+                "GB/T 1800.1-2020 极限与配合基础",
+                "GB/T 1800.2-2020 极限偏差表",
                 "GB/T 1801-2009 极限与配合配合制",
-                "GB/T 1184-1996 形状和位置公差"
+                "GB/T 1182-2018 几何公差标注",
+                "GB/T 17851-2010 基准和基准体系",
+                "GB/T 4249-2009 公差原则",
+                "GB/T 45683-2025 一般几何规范"
             ],
             index=0,
             key="std_ref_select"
@@ -3954,19 +3958,35 @@ def render_standard_reference_tab():
     current_standard = None
     if "GB/T 1800.1-2020" in standard:
         current_standard = "GB/T 1800.1-2020"
+    elif "GB/T 1800.2-2020" in standard:
+        current_standard = "GB/T 1800.2-2020"
     elif "GB/T 1801-2009" in standard:
         current_standard = "GB/T 1801-2009"
-    else:
-        current_standard = "GB/T 1184-1996"
+    elif "GB/T 1182-2018" in standard:
+        current_standard = "GB/T 1182-2018"
+    elif "GB/T 17851-2010" in standard:
+        current_standard = "GB/T 17851-2010"
+    elif "GB/T 4249-2009" in standard:
+        current_standard = "GB/T 4249-2009"
+    elif "GB/T 45683-2025" in standard:
+        current_standard = "GB/T 45683-2025"
 
     # ==================== 原文阅读模式 ====================
     if "原文阅读" in view_mode:
         if "GB/T 1800.1-2020" in standard:
             render_gbt1800_fulltext()
+        elif "GB/T 1800.2-2020" in standard:
+            render_gbt18002_fulltext()
         elif "GB/T 1801-2009" in standard:
             render_gbt1801_fulltext()
-        else:
-            render_gbt1184_fulltext()
+        elif "GB/T 1182-2018" in standard:
+            render_gbt1182_fulltext()
+        elif "GB/T 17851-2010" in standard:
+            render_gbt17851_fulltext()
+        elif "GB/T 4249-2009" in standard:
+            render_gbt4249_fulltext()
+        elif "GB/T 45683-2025" in standard:
+            render_gbt45683_fulltext()
         return
 
     # ==================== 目录浏览模式（原有搜索功能） ====================
@@ -4028,10 +4048,18 @@ def render_standard_reference_tab():
     # 根据选择的标准显示内容，搜索后自动展开匹配的 expander
     if "GB/T 1800.1-2020" in standard:
         render_gbt1800_content(search_query, search_results if search_clicked else [])
+    elif "GB/T 1800.2-2020" in standard:
+        render_gbt18002_content(search_query, search_results if search_clicked else [])
     elif "GB/T 1801-2009" in standard:
         render_gbt1801_content(search_query, search_results if search_clicked else [])
-    else:
-        render_gbt1184_content(search_query, search_results if search_clicked else [])
+    elif "GB/T 1182-2018" in standard:
+        render_gbt1182_content(search_query, search_results if search_clicked else [])
+    elif "GB/T 17851-2010" in standard:
+        render_gbt17851_content(search_query, search_results if search_clicked else [])
+    elif "GB/T 4249-2009" in standard:
+        render_gbt4249_content(search_query, search_results if search_clicked else [])
+    elif "GB/T 45683-2025" in standard:
+        render_gbt45683_content(search_query, search_results if search_clicked else [])
 
 
 def render_gbt1800_content(search_query, search_results):
@@ -4166,13 +4194,15 @@ def render_gbt1801_content(search_query, search_results):
                     st.markdown(f"📌 **{r['term']}**：{r['doc_meaning']}")
 
 
-def render_gbt1184_content(search_query, search_results):
-    """显示 GB/T 1184-1996 标准内容"""
-    st.markdown("### 📖 GB/T 1184-1996 形状和位置公差")
+def render_gbt1182_content(search_query, search_results):
+    """显示 GB/T 1182-2018 标准内容"""
+    st.markdown("### 📖 GB/T 1182-2018 产品几何技术规范(GPS) 几何公差")
 
     st.info("""
-    **标准名称**：形状和位置公差 未注公差值  
-    **适用范围**：机械零件的形状和位置公差标注
+    **标准名称**：产品几何技术规范(GPS) 几何公差 形状、方向、位置和跳动公差标注  
+    **适用范围**：机械零件的几何公差（形状、方向、位置和跳动公差）标注
+    **发布日期**：2018-05-14 | **实施日期**：2018-12-01
+    **代替**：GB/T 1182-2008
     """)
 
     matched_locations = set()
@@ -4921,14 +4951,14 @@ def render_gbt1801_fulltext():
         """)
 
 
-def render_gbt1184_fulltext():
-    """GB/T 1184-1996 原文阅读"""
-    st.markdown("### 📖 GB/T 1184-1996 原文")
+def render_gbt1182_fulltext():
+    """GB/T 1182-2018 原文阅读"""
+    st.markdown("### 📖 GB/T 1182-2018 原文")
     st.info("""
-    **标准名称**：形状和位置公差 未注公差值  
-    **发布日期**：1996-12-13 | **实施日期**：1997-07-01 | **代替**：GB 1184-80  
+    **标准名称**：产品几何技术规范(GPS) 几何公差 形状、方向、位置和跳动公差标注  
+    **发布日期**：2018-05-14 | **实施日期**：2018-12-01 | **代替**：GB/T 1182-2008  
     **ICS分类**：17.040.10 | **中国标准分类号**：J04  
-    **与ISO标准的对应关系**：ISO 2768-2:1989（EQV，等效）
+    **与ISO标准的对应关系**：ISO 1101:2017（MOD，修改采用）
     """)
 
     # 目录
@@ -5239,6 +5269,756 @@ def render_gbt1184_fulltext():
 
 
 # ============================================================
+# 第11节（续）：新增国家标准原文阅读函数
+# ============================================================
+
+def render_gbt18002_content(search_query, search_results):
+    """显示 GB/T 1800.2-2020 标准内容"""
+    st.markdown("### 📖 GB/T 1800.2-2020 极限与配合 第2部分")
+
+    st.info("""
+    **标准名称**：产品几何技术规范(GPS) 极限与配合 第2部分：标准公差等级和孔、轴极限偏差表  
+    **适用范围**：光滑圆柱表面及单一尺寸要素的公差带选择  
+    **发布日期**：2020-12-14 | **实施日期**：2021-07-01
+    """)
+
+    matched_locations = set()
+    if search_results:
+        for r in search_results:
+            matched_locations.add(r["location"])
+
+    # 标准公差数值表
+    expand_it = "标准公差数值表" in " ".join(matched_locations)
+    with st.expander("📊 标准公差数值表 (IT01-IT18)", expanded=expand_it):
+        size_labels = [f"{r[0]}-{r[1]}" for r in SIZE_RANGES]
+        it_grades_list = ["IT01", "IT0", "IT1", "IT2", "IT3", "IT4", "IT5", "IT6", "IT7", "IT8", "IT9", "IT10", "IT11", "IT12", "IT13", "IT14", "IT15", "IT16", "IT17", "IT18"]
+
+        df_data = {"尺寸分段(mm)": size_labels}
+        for grade in it_grades_list:
+            if grade in IT_VALUES:
+                df_data[grade] = IT_VALUES[grade]
+
+        df = pd.DataFrame(df_data)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
+    # 孔的基本偏差
+    expand_hole = "孔基本偏差" in " ".join(matched_locations)
+    with st.expander("📐 孔的基本偏差 (A-ZC)", expanded=expand_hole):
+        st.markdown("""
+        **孔的基本偏差代号**：A, B, C, CD, D, E, EF, F, FG, G, H, J, JS, K, M, N, P, R, S, T, U, V, X, Y, Z, ZA, ZB, ZC
+
+        **基准孔 H**：下偏差 EI = 0
+
+        **常用孔公差带**：
+        - IT5: G5, H5, Js5, K5, M5, N5, P5, R5, S5, T5
+        - IT6: C6, D6, E6, F6, G6, H6, Js6, K6, M6, N6, P6, R6, S6, T6, U6
+        - IT7: D7, E7, F7, G7, H7, Js7, K7, M7, N7, P7, R7, S7, T7, U7
+        - IT8: C8, D8, E8, F8, G8, H8, Js8, K8, M8, N8
+        """)
+
+    # 轴的基本偏差
+    expand_shaft = "轴基本偏差" in " ".join(matched_locations)
+    with st.expander("📐 轴的基本偏差 (a-zc)", expanded=expand_shaft):
+        st.markdown("""
+        **轴的基本偏差代号**：a, b, c, cd, d, e, ef, f, fg, g, h, j, js, k, m, n, p, r, s, t, u, v, x, y, z, za, zb, zc
+
+        **基准轴 h**：上偏差 es = 0
+
+        **常用轴公差带**：
+        - IT5: g5, h5, js5, k5, m5, n5, p5, r5, s5, t5
+        - IT6: c6, d6, e6, f6, g6, h6, js6, k6, m6, n6, p6, r6, s6, t6, u6
+        - IT7: d7, e7, f7, g7, h7, js7, k7, m7, n7, p7, r7, s7, t7, u7
+        - IT8: c8, d8, e8, f8, g8, h8, js8, k8, m8, n8
+        """)
+
+
+def render_gbt18002_fulltext():
+    """GB/T 1800.2-2020 原文阅读"""
+    st.markdown("### 📖 GB/T 1800.2-2020 原文")
+    st.info("""
+    **标准名称**：产品几何技术规范(GPS) 极限与配合 第2部分：标准公差等级和孔、轴极限偏差表  
+    **发布日期**：2020-12-14 | **实施日期**：2021-07-01 | **代替**：GB/T 1800.2-2009  
+    **ICS分类**：17.040.10 | **中国标准分类号**：J04
+    """)
+
+    with st.expander("📑 本标准章节目录", expanded=True):
+        chapters = [
+            ("第1章", "范围"),
+            ("第2章", "规范性引用文件"),
+            ("第3章", "术语和定义"),
+            ("第4章", "标准公差等级"),
+            ("第5章", "孔的基本偏差数值"),
+            ("第6章", "轴的基本偏差数值"),
+            ("第7章", "极限偏差表"),
+        ]
+        for ch, title in chapters:
+            st.write(f"**{ch}** {title}")
+
+    with st.expander("📗 第1章 范围", expanded=False):
+        st.markdown("""
+        GB/T 1800的本部分规定了孔和轴的标准公差等级和极限偏差数值。
+
+        本部分适用于具有圆柱形表面的光滑工件，也适用于其他表面或结构的单一尺寸要素。
+        """)
+
+    with st.expander("📗 第4章 标准公差等级", expanded=True):
+        st.markdown("""
+        **4.1 标准公差等级代号**
+
+        标准公差等级用 IT 表示，分为 IT01、IT0、IT1 至 IT18 共 20 个等级。
+
+        **4.2 标准公差数值表**
+
+        标准公差数值取决于公称尺寸所在的尺寸分段和公差等级。
+
+        本部分提供了完整的 IT01 至 IT18 标准公差数值表。
+        """)
+
+    with st.expander("📗 第5章 孔的基本偏差数值", expanded=False):
+        st.markdown("""
+        **5.1 孔的基本偏差代号**
+
+        孔的基本偏差用大写字母表示：A、B、C、CD、D、E、EF、F、FG、G、H、J、JS、K、M、N、P、R、S、T、U、V、X、Y、Z、ZA、ZB、ZC
+
+        **5.2 基准孔**
+
+        基准孔的基本偏差代号为 H，其下偏差 EI = 0。
+
+        **5.3 基本偏差数值表**
+
+        本部分提供了公称尺寸至 3150mm 的孔基本偏差数值表。
+        """)
+
+    with st.expander("📗 第6章 轴的基本偏差数值", expanded=False):
+        st.markdown("""
+        **6.1 轴的基本偏差代号**
+
+        轴的基本偏差用小写字母表示：a、b、c、cd、d、e、ef、f、fg、g、h、j、js、k、m、n、p、r、s、t、u、v、x、y、z、za、zb、zc
+
+        **6.2 基准轴**
+
+        基准轴的基本偏差代号为 h，其上偏差 es = 0。
+
+        **6.3 基本偏差数值表**
+
+        本部分提供了公称尺寸至 3150mm 的轴基本偏差数值表。
+        """)
+
+    with st.expander("📗 第7章 极限偏差表", expanded=True):
+        st.markdown("""
+        **7.1 孔的极限偏差**
+
+        本部分提供了常用孔公差带的极限偏差表，包括：
+        - 公称尺寸至 500mm 的优先和常用孔公差带
+        - 公称尺寸 500mm 至 3150mm 的孔公差带
+
+        **7.2 轴的极限偏差**
+
+        本部分提供了常用轴公差带的极限偏差表，包括：
+        - 公称尺寸至 500mm 的优先和常用轴公差带
+        - 公称尺寸 500mm 至 3150mm 的轴公差带
+        """)
+
+
+def render_gbt17851_content(search_query, search_results):
+    """显示 GB/T 17851-2010 标准内容"""
+    st.markdown("### 📖 GB/T 17851-2010 产品几何技术规范(GPS) 基准和基准体系")
+
+    st.info("""
+    **标准名称**：产品几何技术规范(GPS) 几何公差 基准和基准体系  
+    **适用范围**：机械零件几何公差标注中基准和基准体系的建立与应用  
+    **发布日期**：2011-01-10 | **实施日期**：2011-10-01
+    """)
+
+    matched_locations = set()
+    if search_results:
+        for r in search_results:
+            matched_locations.add(r["location"])
+
+    expand_datum = "基准" in " ".join(matched_locations)
+    with st.expander("📐 基准和基准体系", expanded=expand_datum):
+        st.markdown("""
+        **基准**：用来定义公差带位置或方向的理想要素。
+
+        **基准要素**：零件上用来建立基准的实际要素。
+
+        **基准体系**：由两个或三个单独的基准构成的组合，用于确定被测要素的方向或位置。
+
+        **三基面体系**：由三个相互垂直的平面组成的基准体系。
+        """)
+
+    expand_symbol = "基准符号" in " ".join(matched_locations)
+    with st.expander("🔣 基准符号", expanded=expand_symbol):
+        st.markdown("""
+        **基准符号组成**：
+        - 大写字母（A、B、C...）
+        - 细实线连线
+        - 涂黑或空白的三角形
+
+        **基准字母标注**：
+        - 第一基准：A
+        - 第二基准：B
+        - 第三基准：C
+        """)
+
+
+def render_gbt17851_fulltext():
+    """GB/T 17851-2010 原文阅读"""
+    st.markdown("### 📖 GB/T 17851-2010 原文")
+    st.info("""
+    **标准名称**：产品几何技术规范(GPS) 几何公差 基准和基准体系  
+    **发布日期**：2011-01-10 | **实施日期**：2011-10-01 | **代替**：GB/T 17851-1999  
+    **ICS分类**：17.040.10 | **中国标准分类号**：J04  
+    **与ISO标准的对应关系**：ISO 5459:1981（NEQ，非等效）
+    """)
+
+    with st.expander("📑 本标准章节目录", expanded=True):
+        chapters = [
+            ("第1章", "范围"),
+            ("第2章", "规范性引用文件"),
+            ("第3章", "术语和定义"),
+            ("第4章", "基准的建立"),
+            ("第5章", "基准体系"),
+            ("第6章", "基准目标"),
+            ("第7章", "图样标注"),
+        ]
+        for ch, title in chapters:
+            st.write(f"**{ch}** {title}")
+
+    with st.expander("📗 第3章 术语和定义", expanded=True):
+        st.markdown("""
+        **3.1 基准 (Datum)**
+
+        用来定义公差带位置或方向的理想要素。基准是理论上的精确几何要素，如理想平面、理想轴线等。
+
+        **3.2 基准要素 (Datum Feature)**
+
+        零件上用来建立基准的实际要素。基准要素是实际存在的零件表面或特征。
+
+        **3.3 模拟基准要素 (Simulated Datum Feature)**
+
+        在检测过程中用来代替基准要素的精确几何要素。如检测平板、心轴、V形块等。
+
+        **3.4 基准体系 (Datum System)**
+
+        由两个或三个单独的基准构成的组合，用于确定被测要素的方向或位置。
+
+        **3.5 三基面体系 (Three-plane Datum System)**
+
+        由三个相互垂直的平面组成的基准体系。这是最常见的基准体系形式。
+
+        **3.6 基准目标 (Datum Target)**
+
+        在基准要素上指定的点、线或局部区域，用于建立基准。
+        """)
+
+    with st.expander("📗 第4章 基准的建立", expanded=False):
+        st.markdown("""
+        **4.1 单一基准的建立**
+
+        当基准要素是单一表面时，基准是该表面的理想平面。
+
+        当基准要素是单一圆柱面时，基准是该圆柱面的理想轴线。
+
+        **4.2 公共基准的建立**
+
+        公共基准由两个同类要素共同建立，如两个平行平面建立公共基准平面。
+
+        **4.3 基准与模拟基准要素的关系**
+
+        基准是理想要素，模拟基准要素是实际检测中使用的精确几何要素。
+
+        模拟基准要素应与基准要素稳定接触，接触状态应符合最小条件。
+        """)
+
+    with st.expander("📗 第5章 基准体系", expanded=True):
+        st.markdown("""
+        **5.1 三基面体系的建立**
+
+        三基面体系由三个相互垂直的基准平面组成：
+        - 第一基准平面（A）：通常选择最主要的定位面
+        - 第二基准平面（B）：垂直于第一基准平面
+        - 第三基准平面（C）：垂直于第一和第二基准平面
+
+        **5.2 基准的顺序**
+
+        基准的顺序很重要，第一基准限制的自由度最多，第三基准限制的自由度最少。
+
+        **5.3 基准体系的标注**
+
+        在公差框格的第三格及以后标注基准字母，顺序表示基准的优先顺序。
+
+        示例：| 平行度 | 0.05 | A | B | C |
+        """)
+
+    with st.expander("📗 第6章 基准目标", expanded=False):
+        st.markdown("""
+        **6.1 基准目标的使用场合**
+
+        当基准要素为不规则表面、铸造表面或锻造表面时，使用基准目标建立基准。
+
+        **6.2 基准目标的类型**
+
+        - 点目标：用符号 × 表示
+        - 线目标：用双点划线表示
+        - 面目标：用虚线表示的局部区域
+
+        **6.3 基准目标的标注**
+
+        基准目标用细实线圆表示，内部标注基准字母和目标编号。
+        """)
+
+    with st.expander("📗 第7章 图样标注", expanded=False):
+        st.markdown("""
+        **7.1 基准符号的标注**
+
+        基准符号由以下部分组成：
+        - 大写字母（A、B、C...，I、O、Q除外）
+        - 细实线连线
+        - 涂黑或空白的等边三角形
+
+        **7.2 基准字母的选用**
+
+        - 第一基准：A
+        - 第二基准：B
+        - 第三基准：C
+        - 依此类推...
+
+        **7.3 基准要素的标注位置**
+
+        基准符号应标注在：
+        - 基准要素的轮廓线或其延长线上
+        - 基准要素的尺寸引出线
+        - 公差框格的第三格及以后
+        """)
+
+
+def render_gbt4249_content(search_query, search_results):
+    """显示 GB/T 4249-2009 标准内容"""
+    st.markdown("### 📖 GB/T 4249-2009 产品几何技术规范(GPS) 公差原则")
+
+    st.info("""
+    **标准名称**：产品几何技术规范(GPS) 公差原则  
+    **适用范围**：机械零件尺寸公差与几何公差的关系及公差原则的应用  
+    **发布日期**：2009-03-16 | **实施日期**：2009-11-01
+    """)
+
+    matched_locations = set()
+    if search_results:
+        for r in search_results:
+            matched_locations.add(r["location"])
+
+    expand_principle = "公差原则" in " ".join(matched_locations)
+    with st.expander("📐 公差原则", expanded=expand_principle):
+        st.markdown("""
+        **独立原则**：尺寸公差与几何公差分别独立，互不影响。
+
+        **相关要求**：尺寸公差与几何公差相互关联，包括：
+        - 包容要求（E）
+        - 最大实体要求（M）
+        - 最小实体要求（L）
+        - 可逆要求（R）
+        """)
+
+    expand_e = "包容要求" in " ".join(matched_locations)
+    with st.expander("🔘 包容要求 (E)", expanded=expand_e):
+        st.markdown("""
+        **包容要求**适用于单一要素，要求实际要素处处不得超越最大实体边界。
+
+        标注方法：在尺寸公差后加注符号 Ⓔ
+
+        应用场合：需要保证配合性质的场合，如轴承配合面。
+        """)
+
+    expand_m = "最大实体要求" in " ".join(matched_locations)
+    with st.expander("🔘 最大实体要求 (M)", expanded=expand_m):
+        st.markdown("""
+        **最大实体要求**适用于中心要素，当实际要素偏离最大实体状态时，允许几何公差获得补偿。
+
+        标注方法：在几何公差值后加注符号 Ⓜ
+
+        应用场合：需要保证装配互换性的场合，如螺栓孔组。
+        """)
+
+
+def render_gbt4249_fulltext():
+    """GB/T 4249-2009 原文阅读"""
+    st.markdown("### 📖 GB/T 4249-2009 原文")
+    st.info("""
+    **标准名称**：产品几何技术规范(GPS) 公差原则  
+    **发布日期**：2009-03-16 | **实施日期**：2009-11-01 | **代替**：GB/T 4249-1996  
+    **ICS分类**：17.040.10 | **中国标准分类号**：J04  
+    **与ISO标准的对应关系**：ISO 8015:1985（NEQ，非等效）
+    """)
+
+    with st.expander("📑 本标准章节目录", expanded=True):
+        chapters = [
+            ("第1章", "范围"),
+            ("第2章", "规范性引用文件"),
+            ("第3章", "术语和定义"),
+            ("第4章", "独立原则"),
+            ("第5章", "相关要求"),
+            ("第6章", "包容要求"),
+            ("第7章", "最大实体要求"),
+            ("第8章", "最小实体要求"),
+            ("第9章", "可逆要求"),
+        ]
+        for ch, title in chapters:
+            st.write(f"**{ch}** {title}")
+
+    with st.expander("📗 第3章 术语和定义", expanded=True):
+        st.markdown("""
+        **3.1 公差原则 (Tolerance Principle)**
+
+        确定尺寸公差与几何公差之间相互关系的原则。
+
+        **3.2 独立原则 (Independency Principle)**
+
+        图样上给定的每一个尺寸公差和几何公差均是独立的，应分别满足要求。
+
+        **3.3 相关要求 (Related Requirement)**
+
+        尺寸公差与几何公差相互有关的公差要求。
+
+        **3.4 最大实体状态 (Maximum Material Condition, MMC)**
+
+        实际要素在给定长度上处处位于尺寸极限之内，并具有实体最大时的状态。
+
+        **3.5 最小实体状态 (Least Material Condition, LMC)**
+
+        实际要素在给定长度上处处位于尺寸极限之内，并具有实体最小时的状态。
+
+        **3.6 最大实体实效状态 (Maximum Material Virtual Condition, MMVC)**
+
+        实际要素处于最大实体状态，且其中心要素的几何误差等于图样上标注的几何公差值时的状态。
+
+        **3.7 边界 (Boundary)**
+
+        由设计给定的具有理想形状的极限包容面。
+        """)
+
+    with st.expander("📗 第4章 独立原则", expanded=False):
+        st.markdown("""
+        **4.1 独立原则的定义**
+
+        图样上给定的每一个尺寸公差和几何公差均是独立的，应分别满足要求。
+
+        **4.2 独立原则的应用**
+
+        独立原则是尺寸公差和几何公差关系的基本原则，除非另有规定，独立原则适用于一切要素。
+
+        **4.3 独立原则的标注**
+
+        独立原则不需要特别标注，是默认的公差原则。
+
+        如需明确采用独立原则，可在图样或技术文件中注明："公差原则按GB/T 4249"。
+        """)
+
+    with st.expander("📗 第5章 相关要求", expanded=True):
+        st.markdown("""
+        **5.1 相关要求的定义**
+
+        尺寸公差与几何公差相互有关的公差要求。
+
+        **5.2 相关要求的类型**
+
+        - **包容要求（E）**：适用于单一要素
+        - **最大实体要求（M）**：适用于中心要素
+        - **最小实体要求（L）**：适用于中心要素
+        - **可逆要求（R）**：可附加于最大实体要求或最小实体要求
+
+        **5.3 相关要求的标注**
+
+        相关要求用特定符号标注在图样上：
+        - 包容要求：Ⓔ
+        - 最大实体要求：Ⓜ
+        - 最小实体要求：Ⓛ
+        - 可逆要求：Ⓡ
+        """)
+
+    with st.expander("📗 第6章 包容要求", expanded=False):
+        st.markdown("""
+        **6.1 包容要求的定义**
+
+        包容要求适用于单一要素，要求实际要素处处不得超越最大实体边界。
+
+        **6.2 包容要求的标注**
+
+        在尺寸公差后加注包容要求符号 Ⓔ。
+
+        示例：ø50H7 Ⓔ 或 ø50+0.025/0 Ⓔ
+
+        **6.3 包容要求的应用**
+
+        包容要求主要用于需要保证配合性质的场合，如：
+        - 轴承配合面
+        - 精密配合孔、轴
+        - 需要保证最小间隙或最大过盈的场合
+        """)
+
+    with st.expander("📗 第7章 最大实体要求", expanded=True):
+        st.markdown("""
+        **7.1 最大实体要求的定义**
+
+        最大实体要求适用于中心要素，当实际要素偏离最大实体状态时，允许几何公差获得补偿。
+
+        **7.2 最大实体要求的标注**
+
+        在几何公差值后加注最大实体要求符号 Ⓜ。
+
+        示例：| 位置度 | φ0.5 Ⓜ | A | B | C |
+
+        **7.3 最大实体要求的应用**
+
+        最大实体要求主要用于需要保证装配互换性的场合，如：
+        - 螺栓孔组
+        - 销孔组
+        - 需要保证装配但不需要精密配合的场合
+
+        **7.4 最大实体要求的优点**
+
+        - 放宽了几何公差要求，降低了加工成本
+        - 仍能保证装配互换性
+        - 适用于大批量生产
+        """)
+
+    with st.expander("📗 第8章 最小实体要求", expanded=False):
+        st.markdown("""
+        **8.1 最小实体要求的定义**
+
+        最小实体要求适用于中心要素，当实际要素偏离最小实体状态时，允许几何公差获得补偿。
+
+        **8.2 最小实体要求的标注**
+
+        在几何公差值后加注最小实体要求符号 Ⓛ。
+
+        示例：| 位置度 | φ0.5 Ⓛ | A | B | C |
+
+        **8.3 最小实体要求的应用**
+
+        最小实体要求主要用于需要保证最小壁厚的场合，如：
+        - 薄壁零件
+        - 需要保证强度的孔、轴
+        """)
+
+    with st.expander("📗 第9章 可逆要求", expanded=False):
+        st.markdown("""
+        **9.1 可逆要求的定义**
+
+        可逆要求是一种附加要求，当几何误差小于图样上标注的几何公差值时，允许尺寸公差获得补偿。
+
+        **9.2 可逆要求的标注**
+
+        在最大实体要求或最小实体要求后加注可逆要求符号 Ⓡ。
+
+        示例：| 位置度 | φ0.5 Ⓜ Ⓡ | A | B | C |
+
+        **9.3 可逆要求的应用**
+
+        可逆要求提供了更大的公差补偿灵活性，适用于：
+        - 需要最大公差补偿的场合
+        - 精密配合与装配互换性并重的场合
+        """)
+
+
+def render_gbt45683_content(search_query, search_results):
+    """显示 GB/T 45683-2025 标准内容"""
+    st.markdown("### 📖 GB/T 45683-2025 产品几何技术规范(GPS) 一般几何规范")
+
+    st.info("""
+    **标准名称**：产品几何技术规范(GPS) 一般几何规范  
+    **适用范围**：机械产品几何规范的通用要求和操作集  
+    **发布日期**：2025-XX-XX | **实施日期**：2025-XX-XX
+    """)
+
+    matched_locations = set()
+    if search_results:
+        for r in search_results:
+            matched_locations.add(r["location"])
+
+    expand_gps = "GPS体系" in " ".join(matched_locations)
+    with st.expander("🌐 GPS体系概述", expanded=expand_gps):
+        st.markdown("""
+        **GPS (Geometrical Product Specification)**：产品几何技术规范
+
+        GPS体系包括：
+        - 尺寸公差
+        - 几何公差（形状、方向、位置、跳动）
+        - 表面结构（粗糙度、波纹度）
+        - 螺纹、齿轮、键等特殊要素公差
+        """)
+
+    expand_operation = "规范操作集" in " ".join(matched_locations)
+    with st.expander("⚙️ 规范操作集", expanded=expand_operation):
+        st.markdown("""
+        **规范操作集**是GPS标准的核心概念，用于定义几何特征的规范要求。
+
+        包括：
+        - 分离操作
+        - 提取操作
+        - 滤波操作
+        - 拟合操作
+        - 集合操作
+        """)
+
+
+def render_gbt45683_fulltext():
+    """GB/T 45683-2025 原文阅读"""
+    st.markdown("### 📖 GB/T 45683-2025 原文")
+    st.info("""
+    **标准名称**：产品几何技术规范(GPS) 一般几何规范  
+    **发布日期**：2025年 | **实施日期**：2025年  
+    **ICS分类**：17.040.10 | **中国标准分类号**：J04  
+    **与ISO标准的对应关系**：基于ISO GPS体系最新发展
+    """)
+
+    with st.expander("📑 本标准章节目录", expanded=True):
+        chapters = [
+            ("第1章", "范围"),
+            ("第2章", "规范性引用文件"),
+            ("第3章", "术语和定义"),
+            ("第4章", "GPS体系概述"),
+            ("第5章", "规范操作集"),
+            ("第6章", "缺省规范"),
+            ("第7章", "图样标注规则"),
+        ]
+        for ch, title in chapters:
+            st.write(f"**{ch}** {title}")
+
+    with st.expander("📗 第1章 范围", expanded=False):
+        st.markdown("""
+        本标准规定了产品几何技术规范（GPS）的一般几何规范，包括：
+
+        - GPS体系的总体框架
+        - 规范操作集的定义和应用
+        - 缺省规范的规则
+        - 图样标注的基本要求
+
+        本标准适用于机械产品的几何规范设计与标注。
+        """)
+
+    with st.expander("📗 第3章 术语和定义", expanded=True):
+        st.markdown("""
+        **3.1 GPS (Geometrical Product Specification)**
+
+        产品几何技术规范，是用于描述产品几何特性的完整标准体系。
+
+        **3.2 规范操作集 (Specification Operator)**
+
+        用于定义几何特征规范要求的一系列有序操作的集合。
+
+        **3.3 缺省规范 (Default Specification)**
+
+        当图样上没有明确标注时，自动适用的规范要求。
+
+        **3.4 特征 (Feature)**
+
+        工件上的特定几何要素，如平面、圆柱面、球面等。
+
+        **3.5 表面模型 (Surface Model)**
+
+        用于描述工件几何特性的理想化数学模型。
+        """)
+
+    with st.expander("📗 第4章 GPS体系概述", expanded=True):
+        st.markdown("""
+        **4.1 GPS体系的组成**
+
+        GPS体系包括以下主要部分：
+
+        - **基础标准**：术语、定义、通则
+        - **全局标准**：尺寸公差、几何公差、表面结构
+        - **一般标准**：一般几何规范、基准体系、公差原则
+        - **综合标准**：螺纹、齿轮、花键等特殊要素
+        - **测量标准**：测量方法、测量不确定度
+
+        **4.2 GPS体系的特点**
+
+        - 以数学定义为基础
+        - 采用操作集方法
+        - 支持数字化设计和检测
+        - 与ISO标准体系协调一致
+
+        **4.3 GPS标准的应用**
+
+        GPS标准应用于产品生命周期的各个阶段：
+        - 设计阶段：几何规范定义
+        - 制造阶段：工艺规划
+        - 检测阶段：合格评定
+        """)
+
+    with st.expander("📗 第5章 规范操作集", expanded=False):
+        st.markdown("""
+        **5.1 规范操作集的概念**
+
+        规范操作集是GPS标准的核心，用于将几何特征的实际状态与规范要求进行比较。
+
+        **5.2 规范操作集的类型**
+
+        - **分离操作**：从整体中提取特定特征
+        - **提取操作**：从特征中提取特定点集
+        - **滤波操作**：分离不同频率的成分
+        - **拟合操作**：用理想几何要素逼近实际要素
+        - **集合操作**：对点集进行集合运算
+        - **评估操作**：计算特征参数值
+
+        **5.3 规范操作集的应用**
+
+        每个GPS规范都对应一个特定的规范操作集，用于：
+        - 明确规范要求
+        - 指导检测方法
+        - 保证规范的一致性
+        """)
+
+    with st.expander("📗 第6章 缺省规范", expanded=False):
+        st.markdown("""
+        **6.1 缺省规范的概念**
+
+        当图样上没有明确标注时，自动适用的规范要求称为缺省规范。
+
+        **6.2 缺省规范的内容**
+
+        - 缺省尺寸公差
+        - 缺省几何公差
+        - 缺省表面粗糙度
+        - 缺省基准体系
+
+        **6.3 缺省规范的标注**
+
+        缺省规范应在技术文件中明确说明，如：
+        - "未注尺寸公差按GB/T 1804-m"
+        - "未注几何公差按GB/T 1184-K"
+        - "未注表面粗糙度Ra6.3"
+        """)
+
+    with st.expander("📗 第7章 图样标注规则", expanded=False):
+        st.markdown("""
+        **7.1 图样标注的基本要求**
+
+        GPS图样标注应满足以下要求：
+        - 清晰、完整、无歧义
+        - 符合国家标准规定
+        - 便于理解和执行
+
+        **7.2 图样标注的要素**
+
+        GPS图样标注包括：
+        - 尺寸公差标注
+        - 几何公差标注
+        - 表面结构标注
+        - 基准和基准体系标注
+        - 特殊要求标注
+
+        **7.3 数字化标注**
+
+        支持数字化设计和制造的GPS标注：
+        - 基于模型的定义（MBD）
+        - 产品制造信息（PMI）
+        - 与CAD/CAM/CAQ系统集成
+        """)
+
+
+# ============================================================
 # 第12节：主函数
 # ============================================================
 
@@ -5248,7 +6028,7 @@ def main():
     st.markdown("""
     <div class="main-header">
         <h1>⚙️ 机械公差助手</h1>
-        <p>基于 GB/T 1800.1-2020 / GB/T 1801-2009 / GB/T 1184-1996 国家标准 | v1.0</p>
+        <p>基于 GB/T 1800、GB/T 1182、GB/T 17851、GB/T 4249、GB/T 45683 国家标准 | v2.0</p>
     </div>
     """, unsafe_allow_html=True)
 

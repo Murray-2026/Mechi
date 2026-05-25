@@ -58,7 +58,7 @@ def render_smart_recommend_tab():
     st.markdown("## 🤖 智能配合推荐系统")
 
     # Tab切换
-    sub_tab1, sub_tab2, sub_tab3 = st.tabs(["🎯 工况推荐", "📊 配合计算", "🔧 基准制选择"])
+    sub_tab1, sub_tab2, sub_tab3, sub_tab4 = st.tabs(["🎯 工况推荐", "📊 配合计算", "🔧 基准制选择", "📦 结构案例库"])
 
     with sub_tab1:
         st.markdown("### 基于工况条件的智能推荐")
@@ -226,3 +226,48 @@ def render_smart_recommend_tab():
                 '• 加工工艺成熟，应用广泛</div></div>',
                 unsafe_allow_html=True
             )
+
+    # ==================== 结构案例库 ====================
+    with sub_tab4:
+        from data.case_data import MECHANICAL_CASES
+
+        st.markdown("### 📦 常见机械结构公差案例库")
+        st.markdown("涵盖轴承安装、键连接、密封结构、销连接、齿轮传动等经典设计案例，提供设计要点与常见公差取值。")
+
+        # 分类选择
+        category_names = [cat["icon"] + " " + cat["category"] for cat in MECHANICAL_CASES]
+        selected_cat = st.selectbox("选择结构类别", category_names, index=0)
+
+        cat_data = next(cat for cat in MECHANICAL_CASES if cat["icon"] + " " + cat["category"] == selected_cat)
+
+        for case in cat_data["cases"]:
+            # 案例标题卡片
+            case_title_html = (
+                '<div style="background:linear-gradient(135deg,#2193b0 0%,#6dd5ed 100%);'
+                'padding:14px;border-radius:10px;margin-bottom:12px;margin-top:20px;">'
+                '<div style="color:white;font-size:18px;font-weight:bold;">' + case["name"] + '</div>'
+                '<div style="color:rgba(255,255,255,0.85);font-size:13px;margin-top:4px;">' + case["description"] + '</div></div>'
+            )
+            st.markdown(case_title_html, unsafe_allow_html=True)
+
+            # 设计要点
+            with st.expander("📝 设计要点", expanded=True):
+                for i, point in enumerate(case["design_points"], 1):
+                    st.markdown(f"**{i}.** {point}")
+
+            # 公差取值表
+            with st.expander("📊 推荐公差取值", expanded=True):
+                import pandas as pd
+                tol_df = pd.DataFrame(case["tolerance_values"])
+                tol_df.columns = ["部位", "公差带/要求", "说明"]
+                st.dataframe(tol_df, use_container_width=True, hide_index=True)
+
+            # 常见错误
+            with st.expander("⚠️ 常见错误", expanded=False):
+                for mistake in case["common_mistakes"]:
+                    st.markdown(
+                        '<div style="background:#fff5f5;border-left:3px solid #e74c3c;padding:8px 12px;'
+                        'margin-bottom:6px;border-radius:0 6px 6px 0;font-size:13px;color:#c0392b;">'
+                        '❌ ' + mistake + '</div>',
+                        unsafe_allow_html=True
+                    )

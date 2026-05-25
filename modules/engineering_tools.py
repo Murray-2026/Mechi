@@ -9,8 +9,8 @@ def render_engineering_tools_tab():
     )
     import pandas as pd
 
-    sub_tab1, sub_tab2, sub_tab3 = st.tabs([
-        "💰 公差等级-成本关联", "🌡️ 热膨胀计算", "🔲 表面粗糙度推荐"
+    sub_tab1, sub_tab2, sub_tab3, sub_tab4 = st.tabs([
+        "💰 公差等级-成本关联", "🌡️ 热膨胀计算", "🔲 表面粗糙度推荐", "🛡️ 防错检查清单"
     ])
 
     # ==================== 公差等级-成本关联 ====================
@@ -127,3 +127,66 @@ def render_engineering_tools_tab():
         with st.expander("📊 表面粗糙度等级对照表", expanded=True):
             ra_df = pd.DataFrame(SURFACE_ROUGHNESS_DATA)
             st.dataframe(ra_df, use_container_width=True, hide_index=True)
+
+    # ==================== 防错设计检查清单 ====================
+    with sub_tab4:
+        from data.case_data import POKAYOKE_CHECKLIST
+
+        st.markdown("### 🛡️ 防错设计检查清单")
+        st.markdown("帮助工程师在设计阶段排查常见错误，涵盖对称性、装配防错、公差标注、工艺可行性等方面。")
+
+        # 分类选择
+        category_names = [cat["icon"] + " " + cat["category"] for cat in POKAYOKE_CHECKLIST]
+        selected_cat = st.selectbox("选择检查类别", category_names, index=0)
+
+        cat_data = next(cat for cat in POKAYOKE_CHECKLIST if cat["icon"] + " " + cat["category"] == selected_cat)
+
+        for check_group in cat_data["checks"]:
+            # 检查组标题
+            group_title_html = (
+                '<div style="background:linear-gradient(135deg,#f5af19 0%,#f12711 100%);'
+                'padding:12px;border-radius:8px;margin-bottom:12px;margin-top:20px;">'
+                '<div style="color:white;font-size:16px;font-weight:bold;">' + check_group["name"] + '</div>'
+                '<div style="color:rgba(255,255,255,0.85);font-size:13px;margin-top:4px;">' + check_group["description"] + '</div></div>'
+            )
+            st.markdown(group_title_html, unsafe_allow_html=True)
+
+            # 检查项列表
+            for item in check_group["items"]:
+                # 等级标签颜色
+                if item["level"] == "必须检查":
+                    level_bg = "#e74c3c"
+                    level_color = "white"
+                elif item["level"] == "推荐":
+                    level_bg = "#f39c12"
+                    level_color = "white"
+                else:
+                    level_bg = "#95a5a6"
+                    level_color = "white"
+
+                item_html = (
+                    '<div style="background:white;border:1px solid #e0e0e0;border-radius:8px;'
+                    'padding:12px;margin-bottom:8px;">'
+                    '<div style="display:flex;align-items:flex-start;gap:8px;">'
+                    '<input type="checkbox" style="margin-top:4px;width:16px;height:16px;cursor:pointer;">'
+                    '<div style="flex:1;">'
+                    '<div style="font-size:14px;color:#2c3e50;font-weight:500;margin-bottom:4px;">'
+                    + item["check"] + '</div>'
+                    '<div style="font-size:12px;color:#7f8c8d;line-height:1.5;">'
+                    '💡 ' + item["tip"] + '</div>'
+                    '</div>'
+                    '<span style="font-size:11px;background:' + level_bg + ';color:' + level_color + ';'
+                    'padding:2px 8px;border-radius:10px;white-space:nowrap;">' + item["level"] + '</span>'
+                    '</div></div>'
+                )
+                st.markdown(item_html, unsafe_allow_html=True)
+
+        # 使用说明
+        st.markdown("---")
+        st.markdown("""
+        **📋 使用说明：**
+        - 🔴 **必须检查**：关键项，遗漏可能导致零件无法装配或功能失效
+        - 🟡 **推荐**：建议项，可提高设计质量和可靠性
+        - ☑️ 勾选每项检查内容，确保设计无遗漏
+        - 建议在图纸评审前逐项核对
+        """)

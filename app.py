@@ -616,189 +616,997 @@ FIT_RECOMMENDATION_RULES = [
 
 # --- 3.6 形位公差推荐 ---
 GEOMETRIC_TOLERANCE_RECOMMENDATIONS = {
-    "轴": {
-        "支撑轴颈": [
+    "轴类": {
+        "支撑轴颈（滚动轴承配合面）": [
             {
                 "item": "圆度",
                 "grade_range": (5, 7),
-                "reason": "支撑轴颈圆度直接影响轴承运转精度，一般选用5-7级"
+                "reason": "轴颈圆度直接影响轴承运转精度和噪声。圆度误差过大导致轴承振动和磨损加剧。",
+                "standard_ref": "GB/T 1184",
+                "application": "电动机轴、主轴、传动轴的轴承配合段"
             },
             {
                 "item": "圆柱度",
                 "grade_range": (5, 7),
-                "reason": "圆柱度影响轴承配合质量，与圆度等级协调"
+                "reason": "圆柱度误差影响轴承配合均匀性，可能导致局部应力集中和早期失效。",
+                "standard_ref": "GB/T 1184",
+                "application": "与圆度配合使用，综合控制轴颈形状"
+            },
+            {
+                "item": "径向圆跳动",
+                "grade_range": (5, 7),
+                "reason": "综合反映轴颈的形状误差和同轴度误差，是验收轴类零件的重要指标。",
+                "standard_ref": "GB/T 1184",
+                "application": "测量时将轴旋转一周，百分表读数差即为跳动量"
             },
             {
                 "item": "同轴度",
                 "grade_range": (5, 8),
-                "reason": "多轴颈同轴度影响装配精度和运转平稳性"
-            },
-            {
-                "item": "圆跳动",
-                "grade_range": (6, 8),
-                "reason": "综合反映轴颈形状和位置误差"
+                "reason": "多阶梯轴各轴颈的同轴度影响轴承装配和转子动平衡。",
+                "standard_ref": "GB/T 1184",
+                "application": "阶梯轴、齿轮轴、电机轴等"
             },
         ],
-        "安装齿轮段": [
+        "轴肩过渡处": [
             {
-                "item": "圆度",
+                "item": "垂直度",
                 "grade_range": (6, 8),
-                "reason": "齿轮安装段圆度影响齿轮啮合精度"
+                "reason": "轴肩端面垂直度影响滚动轴承、齿轮等零件的轴向定位精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "轴承定位肩、齿轮挡边、联轴器定位面"
             },
             {
-                "item": "同轴度（相对基准轴颈）",
+                "item": "圆跳动（端面）",
                 "grade_range": (6, 8),
-                "reason": "齿轮段与支撑轴颈的同轴度影响齿轮啮合质量"
-            },
-            {
-                "item": "端面跳动",
-                "grade_range": (6, 8),
-                "reason": "齿轮定位端面的跳动影响齿轮轴向定位精度"
+                "reason": "轴肩端面跳动影响零件的轴向位置精度和受力均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "测量轴肩对轴线的跳动"
             },
         ],
-        "键槽": [
+        "键槽配合面": [
             {
                 "item": "对称度",
                 "grade_range": (7, 9),
-                "reason": "键槽对称度影响键的装配质量和受力均匀性"
+                "reason": "键槽对称度误差导致键受力不均，产生附加弯矩，加速键和键槽磨损。",
+                "standard_ref": "GB/T 1184",
+                "application": "普通平键槽、半圆键槽、楔键槽"
+            },
+            {
+                "item": "平行度",
+                "grade_range": (7, 9),
+                "reason": "键槽侧面对轴线的平行度影响键的装配和传动平稳性。",
+                "standard_ref": "GB/T 1184",
+                "application": "与对称度同时控制"
+            },
+            {
+                "item": "位置度",
+                "grade_range": (8, 10),
+                "reason": "花键配合的花键轴，各键中心对基准轴线的位置度误差影响花键装配。",
+                "standard_ref": "GB/T 1184",
+                "application": "矩形花键、渐开线花键"
+            },
+        ],
+        "外圆表面（非轴承面）": [
+            {
+                "item": "圆度",
+                "grade_range": (6, 9),
+                "reason": "非轴承配合面的圆度误差影响外观和装配。",
+                "standard_ref": "GB/T 1184",
+                "application": "装饰面、填料函处"
+            },
+            {
+                "item": "圆柱度",
+                "grade_range": (6, 9),
+                "reason": "圆柱度误差影响非配合段与其他零件的相对位置。",
+                "standard_ref": "GB/T 1184",
+                "application": "一般传动轴的非配合段"
+            },
+        ],
+        "螺纹部分": [
+            {
+                "item": "同轴度",
+                "grade_range": (6, 8),
+                "reason": "螺纹轴线对基准轴颈的同轴度影响螺纹旋合质量和传动精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "丝杠、蜗杆、传动螺纹"
+            },
+            {
+                "item": "圆跳动（径向）",
+                "grade_range": (6, 9),
+                "reason": "螺纹牙侧面的跳动影响螺纹配合精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "测量螺纹牙侧面对轴线的跳动"
+            },
+        ],
+        "定位台阶面": [
+            {
+                "item": "垂直度",
+                "grade_range": (6, 8),
+                "reason": "定位台阶面对轴线的垂直度影响被固定零件的定位精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "轴承挡肩、齿轮定位台阶"
+            },
+            {
+                "item": "圆跳动（端面）",
+                "grade_range": (6, 8),
+                "reason": "定位端面跳动影响被固定件的受力均匀性和定位可靠性。",
+                "standard_ref": "GB/T 1184",
+                "application": "轴向定位面"
             },
         ],
     },
-    "孔": {
-        "轴承孔": [
+    "孔类": {
+        "轴承孔（箱体/座孔）": [
             {
                 "item": "圆度",
                 "grade_range": (5, 7),
-                "reason": "轴承孔圆度直接影响轴承外圈配合质量"
+                "reason": "轴承孔圆度误差直接影响轴承外圈变形和运转精度，加速轴承损坏。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速器箱体孔、电机端盖孔、泵体轴承孔"
             },
             {
                 "item": "圆柱度",
                 "grade_range": (5, 7),
-                "reason": "圆柱度影响轴承配合的均匀性"
+                "reason": "圆柱度误差导致轴承外圈受力不均，影响轴承寿命。",
+                "standard_ref": "GB/T 1184",
+                "application": "与圆度配合使用"
             },
             {
-                "item": "同轴度（多孔）",
-                "grade_range": (6, 8),
-                "reason": "多轴承孔同轴度影响轴的装配和运转精度"
+                "item": "同轴度",
+                "grade_range": (5, 7),
+                "reason": "箱体上同轴孔的同轴度误差严重影响轴系装配和运转精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速机箱体两侧轴承孔、电机机体与端盖轴承孔"
+            },
+            {
+                "item": "径向圆跳动",
+                "grade_range": (5, 7),
+                "reason": "综合控制轴承孔的形状和位置误差，是箱体检测的关键指标。",
+                "standard_ref": "GB/T 1184",
+                "application": "箱体轴承孔出厂检验"
             },
         ],
         "定位销孔": [
             {
                 "item": "位置度",
-                "grade_range": (7, 9),
-                "reason": "定位销孔位置度直接影响定位精度"
+                "grade_range": (6, 8),
+                "reason": "销孔位置度误差直接影响零件定位精度，影响装配互换性。",
+                "standard_ref": "GB/T 1184",
+                "application": "箱体剖分面定位销孔、夹具定位孔"
             },
             {
                 "item": "圆度",
                 "grade_range": (6, 8),
-                "reason": "销孔圆度影响销的配合质量"
+                "reason": "销孔圆度误差影响销与孔的配合精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "圆柱销定位孔"
+            },
+            {
+                "item": "垂直度（相对基准面）",
+                "grade_range": (7, 9),
+                "reason": "销孔轴线对基准面的垂直度影响定位销的插入和定位精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "精密机床夹具销孔"
             },
         ],
         "螺纹孔": [
             {
                 "item": "位置度",
-                "grade_range": (8, 10),
-                "reason": "螺纹孔位置度影响螺栓的装配"
+                "grade_range": (7, 10),
+                "reason": "螺纹孔位置度误差影响螺栓装配和连接强度。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速器箱盖螺孔、支架安装孔"
             },
             {
-                "item": "垂直度（相对端面）",
+                "item": "垂直度（相对被连接面）",
+                "grade_range": (7, 10),
+                "reason": "螺纹孔轴线对端面的垂直度影响螺栓杆的受力和装配质量。",
+                "standard_ref": "GB/T 1184",
+                "application": "法兰端面螺孔、箱体安装面螺孔"
+            },
+            {
+                "item": "同轴度（盲孔族）",
                 "grade_range": (8, 10),
-                "reason": "螺纹孔垂直度影响螺栓拧入质量"
+                "reason": "多螺纹孔对同一基准的同轴度影响螺栓均匀受力。",
+                "standard_ref": "GB/T 1184",
+                "application": "均匀分布的法兰螺孔组"
             },
         ],
-    },
-    "箱体": {
-        "轴承孔系": [
+        "齿轮安装孔": [
             {
-                "item": "平行度（孔系间）",
-                "grade_range": (5, 7),
-                "reason": "轴承孔系平行度直接影响齿轮啮合精度"
+                "item": "圆度",
+                "grade_range": (6, 8),
+                "reason": "齿轮孔圆度误差影响齿轮与轴的配合质量和平稳运转。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速器齿轮轮毂孔"
             },
             {
-                "item": "同轴度（同轴孔）",
+                "item": "同轴度（相对基准孔）",
                 "grade_range": (6, 8),
-                "reason": "同轴孔的同轴度影响轴的装配精度"
+                "reason": "齿轮安装孔对轴承孔的同轴度影响齿轮啮合精度和噪声。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速机箱体上齿轮安装孔"
+            },
+            {
+                "item": "端面圆跳动",
+                "grade_range": (7, 9),
+                "reason": "齿轮定位端面跳动影响齿轮轴向定位精度和受力均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "齿轮定位肩面"
+            },
+        ],
+        "液压/气动通道孔": [
+            {
+                "item": "圆度",
+                "grade_range": (7, 10),
+                "reason": "通道孔圆度影响密封件寿命和流体流通效率。",
+                "standard_ref": "GB/T 1184",
+                "application": "液压阀体油孔、气缸筒壁孔"
             },
             {
                 "item": "位置度",
-                "grade_range": (6, 8),
-                "reason": "孔系位置度影响齿轮中心距精度"
+                "grade_range": (8, 10),
+                "reason": "通道孔位置度误差影响管路连接和流体分配。",
+                "standard_ref": "GB/T 1184",
+                "application": "多通道交叉孔系"
             },
             {
-                "item": "平面度（结合面）",
-                "grade_range": (6, 8),
-                "reason": "箱体结合面平面度影响密封性能"
+                "item": "垂直度",
+                "grade_range": (8, 10),
+                "reason": "密封面孔的垂直度影响密封效果。",
+                "standard_ref": "GB/T 1184",
+                "application": "液压阀块安装面"
             },
         ],
-        "安装面": [
+        "深孔（枪钻/镗削）": [
             {
-                "item": "平面度",
+                "item": "圆度",
                 "grade_range": (6, 9),
-                "reason": "安装面平面度影响部件安装精度"
+                "reason": "深孔圆度误差反映镗削稳定性和刀具状态。",
+                "standard_ref": "GB/T 1184",
+                "application": "液压缸筒、深孔套筒"
             },
             {
-                "item": "平行度（相对基准面）",
+                "item": "直线度",
                 "grade_range": (6, 9),
-                "reason": "安装面平行度影响安装后部件的位置精度"
+                "reason": "深孔直线度误差影响活塞杆/心轴通过性和密封寿命。",
+                "standard_ref": "GB/T 1184",
+                "application": "液压缸筒、炮管、模具导套"
             },
         ],
     },
-    "法兰": {
-        "密封面": [
+    "齿轮类": {
+        "齿坯基准孔/轴": [
+            {
+                "item": "圆度",
+                "grade_range": (6, 8),
+                "reason": "齿坯基准孔/轴圆度直接影响齿轮与轴的配合质量和啮合精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "齿轮轮毂孔、齿轮轴颈"
+            },
+            {
+                "item": "圆柱度",
+                "grade_range": (6, 8),
+                "reason": "圆柱度误差影响配合面接触均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "与圆度配合使用"
+            },
+            {
+                "item": "同轴度（相对基准）",
+                "grade_range": (6, 8),
+                "reason": "齿圈相对基准孔/轴的同轴度误差直接影响齿轮啮合质量。",
+                "standard_ref": "GB/T 1184",
+                "application": "齿轮安装基准面对齿圈跳动"
+            },
+            {
+                "item": "径向圆跳动",
+                "grade_range": (6, 8),
+                "reason": "齿圈径向跳动是评价齿轮精度的重要指标，影响传动平稳性。",
+                "standard_ref": "GB/T 1184",
+                "application": "齿轮齿圈对基准孔的跳动"
+            },
+            {
+                "item": "端面圆跳动",
+                "grade_range": (6, 8),
+                "reason": "齿轮基准端面跳动影响齿轮轴向定位和受力均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "锥齿轮法兰端面、圆柱齿轮轴肩"
+            },
+        ],
+        "齿轮定位键槽": [
+            {
+                "item": "对称度",
+                "grade_range": (7, 9),
+                "reason": "键槽对称度误差导致键受力不均，产生附加弯矩，加速键和键槽磨损。",
+                "standard_ref": "GB/T 1184",
+                "application": "齿轮、平键连接"
+            },
+            {
+                "item": "平行度",
+                "grade_range": (7, 9),
+                "reason": "键槽侧面对轴线的平行度影响键的装配和传动平稳性。",
+                "standard_ref": "GB/T 1184",
+                "application": "与对称度同时控制"
+            },
+        ],
+        "齿坯外圆/止口": [
+            {
+                "item": "圆度",
+                "grade_range": (7, 9),
+                "reason": "齿坯外圆/止口圆度影响齿轮在装配中的定位精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "齿轮外圆、法兰止口"
+            },
+            {
+                "item": "同轴度",
+                "grade_range": (7, 9),
+                "reason": "齿坯外圆对基准孔的同轴度影响齿轮定位精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "齿坯外圆对基准孔"
+            },
+        ],
+    },
+    "箱体类": {
+        "轴承孔系": [
+            {
+                "item": "同轴度（孔系间）",
+                "grade_range": (5, 7),
+                "reason": "箱体轴承孔系同轴度误差是轴系装配误差的主要来源，直接影响齿轮啮合精度和噪声。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速机箱体主从动轴轴承孔"
+            },
+            {
+                "item": "平行度（孔系轴线间）",
+                "grade_range": (5, 7),
+                "reason": "轴承孔轴线平行度误差导致齿轮轴线不平行，影响齿面接触和传动精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "斜齿轮、蜗轮蜗杆箱体"
+            },
+            {
+                "item": "圆度",
+                "grade_range": (6, 8),
+                "reason": "轴承孔圆度误差影响轴承外圈配合均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "轴承安装孔"
+            },
+            {
+                "item": "圆柱度",
+                "grade_range": (6, 8),
+                "reason": "圆柱度误差与圆度配合控制轴承孔形状精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "与圆度同时控制"
+            },
+            {
+                "item": "位置度（孔间距）",
+                "grade_range": (6, 8),
+                "reason": "孔间距位置度误差影响齿轮中心距和啮合精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "孔系中心距"
+            },
+        ],
+        "结合面（剖分面/安装面）": [
+            {
+                "item": "平面度",
+                "grade_range": (6, 8),
+                "reason": "箱体结合面平面度误差直接影响密封性能，漏油是最常见的故障之一。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速机箱盖与箱座结合面"
+            },
+            {
+                "item": "平行度（结合面对轴承孔轴线）",
+                "grade_range": (7, 9),
+                "reason": "结合面对轴承孔轴线的平行度影响轴承孔中心高度精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速机箱体底面"
+            },
+            {
+                "item": "垂直度（侧面对底面）",
+                "grade_range": (7, 9),
+                "reason": "箱体侧面垂直度影响整机装配和外观。",
+                "standard_ref": "GB/T 1184",
+                "application": "箱体安装侧面"
+            },
+        ],
+        "定位销孔": [
+            {
+                "item": "位置度",
+                "grade_range": (6, 8),
+                "reason": "剖分箱体销孔位置度决定剖分面定位精度，影响轴承孔同轴度。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速机箱盖与箱座定位销孔"
+            },
+            {
+                "item": "同轴度（相对轴承孔）",
+                "grade_range": (7, 9),
+                "reason": "定位销孔对轴承孔的同轴度影响定位销的装配。",
+                "standard_ref": "GB/T 1184",
+                "application": "精密机床箱体"
+            },
+        ],
+        "安装基面": [
+            {
+                "item": "平面度",
+                "grade_range": (7, 10),
+                "reason": "安装基面平面度影响设备安装水平和受力均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速机底面、电机安装面"
+            },
+            {
+                "item": "平行度（相对轴承孔轴线）",
+                "grade_range": (7, 10),
+                "reason": "安装基面对轴承孔轴线的平行度影响设备安装后的轴线高度。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速机底面"
+            },
+        ],
+        "油孔/油尺孔": [
+            {
+                "item": "位置度",
+                "grade_range": (9, 11),
+                "reason": "油孔位置影响油路布置和加油便利性。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速机箱体油孔"
+            },
+            {
+                "item": "垂直度",
+                "grade_range": (9, 11),
+                "reason": "油尺孔垂直度影响油尺插入和油位测量准确性。",
+                "standard_ref": "GB/T 1184",
+                "application": "油尺安装孔"
+            },
+        ],
+    },
+    "法兰类": {
+        "密封面（端面密封）": [
             {
                 "item": "平面度",
                 "grade_range": (5, 8),
-                "reason": "法兰密封面平面度直接影响密封性能"
+                "reason": "密封面平面度是保证密封效果的首要条件，平面度误差直接导致泄漏。",
+                "standard_ref": "GB/T 1184",
+                "application": "管道法兰密封面、阀门端盖、液压阀块安装面"
             },
             {
-                "item": "平行度（相对结合面）",
+                "item": "垂直度（密封面对轴线）",
                 "grade_range": (6, 8),
-                "reason": "法兰面平行度影响螺栓预紧力的均匀性"
+                "reason": "密封面对轴线垂直度影响密封垫片的压缩均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "液压缸端盖、法兰"
+            },
+            {
+                "item": "圆跳动（密封面）",
+                "grade_range": (6, 8),
+                "reason": "密封面径向跳动反映密封面的对称性和均匀受压程度。",
+                "standard_ref": "GB/T 1184",
+                "application": "回转密封面"
             },
         ],
-        "螺栓孔": [
+        "定位止口/凸台": [
+            {
+                "item": "圆度",
+                "grade_range": (6, 8),
+                "reason": "定位止口圆度决定法兰定位精度，影响同轴装配。",
+                "standard_ref": "GB/T 1184",
+                "application": "法兰定位止口、阀体安装凸台"
+            },
+            {
+                "item": "同轴度（止口相对密封面）",
+                "grade_range": (6, 8),
+                "reason": "止口对密封面的同轴度误差导致密封不均匀，影响密封效果。",
+                "standard_ref": "GB/T 1184",
+                "application": "法兰止口与密封面"
+            },
+            {
+                "item": "垂直度（止口对端面）",
+                "grade_range": (6, 8),
+                "reason": "止口轴线对端面的垂直度影响法兰装配定位精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "法兰止口"
+            },
+        ],
+        "连接螺栓孔": [
             {
                 "item": "位置度",
+                "grade_range": (7, 10),
+                "reason": "螺栓孔位置度误差影响螺栓装配和连接强度，严重时无法装配。",
+                "standard_ref": "GB/T 1184",
+                "application": "法兰连接孔、管板孔"
+            },
+            {
+                "item": "垂直度（螺栓孔对法兰面）",
                 "grade_range": (8, 10),
-                "reason": "螺栓孔位置度影响螺栓装配"
+                "reason": "螺栓孔轴线对法兰面的垂直度影响螺栓杆受力均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "压力容器法兰"
+            },
+            {
+                "item": "同轴度（孔组对基准）",
+                "grade_range": (8, 10),
+                "reason": "均匀分布的螺栓孔组对公共基准的同轴度影响装配互换性。",
+                "standard_ref": "GB/T 1184",
+                "application": "标准法兰盘"
+            },
+        ],
+        "密封环槽": [
+            {
+                "item": "圆度",
+                "grade_range": (6, 8),
+                "reason": "密封环槽圆度误差影响密封圈压缩量均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "O形圈沟槽、静密封面"
+            },
+            {
+                "item": "同轴度（环槽相对基准）",
+                "grade_range": (6, 8),
+                "reason": "环槽对基准的同轴度影响密封件受力均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "轴套密封槽"
+            },
+        ],
+    },
+    "端盖/箱盖类": {
+        "密封配合面": [
+            {
+                "item": "平面度",
+                "grade_range": (6, 8),
+                "reason": "端盖配合面平面度直接影响密封效果，是最关键的形位公差项目。",
+                "standard_ref": "GB/T 1184",
+                "application": "减速机箱盖、电机端盖、阀门端盖"
+            },
+            {
+                "item": "垂直度（配合面对轴线）",
+                "grade_range": (6, 8),
+                "reason": "端盖配合面对轴线的垂直度影响密封件压缩均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "迷宫密封端盖"
+            },
+        ],
+        "轴承孔（如为轴承座）": [
+            {
+                "item": "圆度",
+                "grade_range": (6, 8),
+                "reason": "端盖轴承孔圆度误差影响轴承外圈配合和运转精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "轴承压盖、轴承座端盖"
+            },
+            {
+                "item": "同轴度（相对配合止口）",
+                "grade_range": (6, 8),
+                "reason": "端盖轴承孔对止口的同轴度影响轴的装配和运转。",
+                "standard_ref": "GB/T 1184",
+                "application": "轴承压盖"
+            },
+            {
+                "item": "圆柱度",
+                "grade_range": (6, 8),
+                "reason": "圆柱度误差与圆度配合控制孔形状精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "与圆度同时控制"
             },
         ],
         "定位止口": [
             {
                 "item": "圆度",
-                "grade_range": (6, 8),
-                "reason": "定位止口圆度影响法兰定位精度"
+                "grade_range": (7, 9),
+                "reason": "定位止口圆度决定端盖定位精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "端盖定位止口"
             },
             {
-                "item": "同轴度（相对密封面）",
-                "grade_range": (6, 8),
-                "reason": "止口与密封面的同轴度影响密封效果"
+                "item": "同轴度（相对配合面）",
+                "grade_range": (7, 9),
+                "reason": "止口对配合面的同轴度影响密封效果。",
+                "standard_ref": "GB/T 1184",
+                "application": "端盖"
+            },
+        ],
+        "螺钉孔": [
+            {
+                "item": "位置度",
+                "grade_range": (8, 10),
+                "reason": "螺钉孔位置度误差影响螺钉装配和连接强度。",
+                "standard_ref": "GB/T 1184",
+                "application": "端盖固定螺钉孔"
+            },
+            {
+                "item": "垂直度（相对配合面）",
+                "grade_range": (8, 10),
+                "reason": "螺钉孔轴线对配合面的垂直度影响螺钉受力。",
+                "standard_ref": "GB/T 1184",
+                "application": "盖板螺钉孔"
             },
         ],
     },
-    "端盖": {
-        "定位面": [
+    "导轨类": {
+        "滑动导轨面": [
             {
-                "item": "平面度",
-                "grade_range": (6, 8),
-                "reason": "端盖定位面平面度影响密封和安装精度"
+                "item": "直线度（纵向）",
+                "grade_range": (5, 8),
+                "reason": "导轨纵向直线度误差直接影响运动精度，是机床导轨最基本的形位要求。",
+                "standard_ref": "GB/T 1184",
+                "application": "车床床身导轨、铣床工作台导轨"
             },
             {
-                "item": "垂直度（相对轴线）",
+                "item": "平面度（横向）",
+                "grade_range": (5, 8),
+                "reason": "导轨横向平面度影响运动副接触均匀性和导轨受力分布。",
+                "standard_ref": "GB/T 1184",
+                "application": "床身导轨顶面"
+            },
+            {
+                "item": "平行度（两导轨间）",
+                "grade_range": (5, 8),
+                "reason": "双矩形导轨平行度误差影响运动直线性和定位精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "双V导轨、双矩形导轨"
+            },
+            {
+                "item": "垂直度（导轨对基准面）",
                 "grade_range": (6, 8),
-                "reason": "端面与轴线的垂直度影响密封效果"
+                "reason": "导轨对基准安装面的垂直度影响设备安装精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "床身导轨对底面"
             },
         ],
-        "轴承孔（如有）": [
+        "燕尾导轨": [
+            {
+                "item": "直线度",
+                "grade_range": (6, 8),
+                "reason": "燕尾导轨直线度误差影响滑动精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "车床溜板箱燕尾导轨"
+            },
+            {
+                "item": "平行度（导轨宽度方向）",
+                "grade_range": (6, 8),
+                "reason": "燕尾导轨平行度影响塞尺调整精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "燕尾配合面"
+            },
+            {
+                "item": "角度（燕尾角）",
+                "grade_range": (8, 10),
+                "reason": "燕尾角误差影响配合间隙调整范围。",
+                "standard_ref": "GB/T 1184",
+                "application": "燕尾导轨"
+            },
+        ],
+        "导轨安装基准面": [
+            {
+                "item": "平面度",
+                "grade_range": (7, 9),
+                "reason": "导轨安装基准面平面度影响导轨安装水平度和受力均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "床身与地基接触面"
+            },
+            {
+                "item": "平行度（安装面对导轨面）",
+                "grade_range": (7, 9),
+                "reason": "安装面对导轨面的平行度影响导轨直线度。",
+                "standard_ref": "GB/T 1184",
+                "application": "安装基准"
+            },
+        ],
+        "定位键槽（T型槽）": [
+            {
+                "item": "直线度",
+                "grade_range": (7, 9),
+                "reason": "T型槽直线度影响定位键的装配和定位精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "机床工作台T型槽"
+            },
+            {
+                "item": "位置度",
+                "grade_range": (7, 9),
+                "reason": "T型槽位置度影响工件夹具定位精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "工作台T型槽分布"
+            },
+            {
+                "item": "对称度",
+                "grade_range": (8, 10),
+                "reason": "T型槽对称度影响定位键与槽的配合。",
+                "standard_ref": "GB/T 1184",
+                "application": "与位置度配合"
+            },
+        ],
+    },
+    "丝杠类": {
+        "丝杠支承轴颈": [
+            {
+                "item": "圆度",
+                "grade_range": (5, 7),
+                "reason": "支承轴颈圆度误差直接影响丝杠运转精度和反向间隙。",
+                "standard_ref": "GB/T 1184",
+                "application": "精密丝杠两端轴颈"
+            },
+            {
+                "item": "圆柱度",
+                "grade_range": (5, 7),
+                "reason": "圆柱度与圆度配合控制轴颈形状精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "与圆度同时控制"
+            },
+            {
+                "item": "径向圆跳动",
+                "grade_range": (5, 7),
+                "reason": "支承轴颈跳动直接影响丝杠回转精度和定位精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "丝杠支承轴颈"
+            },
+            {
+                "item": "同轴度（两轴颈间）",
+                "grade_range": (5, 7),
+                "reason": "两支承轴颈同轴度误差影响丝杠运转平稳性和轴承寿命。",
+                "standard_ref": "GB/T 1184",
+                "application": "两端轴颈"
+            },
+        ],
+        "丝杠螺纹部分": [
+            {
+                "item": "同轴度（螺纹轴线对支承轴颈）",
+                "grade_range": (5, 7),
+                "reason": "螺纹轴线对支承轴颈的同轴度误差是产生螺距累积误差的主要原因。",
+                "standard_ref": "GB/T 1184",
+                "application": "滚珠丝杠、梯形丝杠"
+            },
+            {
+                "item": "圆跳动（牙侧面对轴线）",
+                "grade_range": (5, 7),
+                "reason": "螺纹牙侧面跳动反映螺距误差和牙形误差的综合影响。",
+                "standard_ref": "GB/T 1184",
+                "application": "精密丝杠检验"
+            },
+        ],
+        "螺母安装面": [
+            {
+                "item": "垂直度（安装面对轴线）",
+                "grade_range": (6, 8),
+                "reason": "螺母安装面对丝杠轴线的垂直度影响螺母运动灵活性和使用寿命。",
+                "standard_ref": "GB/T 1184",
+                "application": "螺母支承面"
+            },
+            {
+                "item": "平面度",
+                "grade_range": (7, 9),
+                "reason": "安装面平面度影响螺母定位精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "与垂直度配合"
+            },
+        ],
+    },
+    "液压气动类": {
+        "液压缸筒": [
+            {
+                "item": "圆度",
+                "grade_range": (6, 9),
+                "reason": "缸筒圆度误差直接影响活塞密封寿命和缸筒容积效率。",
+                "standard_ref": "GB/T 1184",
+                "application": "液压缸内孔、气缸筒"
+            },
+            {
+                "item": "圆柱度",
+                "grade_range": (6, 9),
+                "reason": "圆柱度误差与直线度配合控制缸筒形状精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "与圆度、直线度配合"
+            },
+            {
+                "item": "直线度",
+                "grade_range": (6, 9),
+                "reason": "缸筒直线度误差影响活塞杆运动平稳性和密封寿命。",
+                "standard_ref": "GB/T 1184",
+                "application": "长行程液压缸"
+            },
+        ],
+        "活塞杆": [
             {
                 "item": "圆度",
                 "grade_range": (6, 8),
-                "reason": "端盖轴承孔圆度影响轴承配合质量"
+                "reason": "活塞杆圆度误差影响活塞密封效果和运动平稳性。",
+                "standard_ref": "GB/T 1184",
+                "application": "液压缸活塞杆"
             },
             {
-                "item": "同轴度",
+                "item": "圆柱度",
+                "grade_range": (6, 8),
+                "reason": "圆柱度与圆度配合控制活塞杆形状精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "与圆度同时控制"
+            },
+            {
+                "item": "直线度",
+                "grade_range": (6, 8),
+                "reason": "活塞杆直线度误差影响密封件寿命和导向套磨损。",
+                "standard_ref": "GB/T 1184",
+                "application": "活塞杆全长"
+            },
+            {
+                "item": "同轴度（工作面对支承面）",
+                "grade_range": (6, 8),
+                "reason": "活塞杆工作面对支承轴颈的同轴度影响密封件均匀磨损。",
+                "standard_ref": "GB/T 1184",
+                "application": "活塞杆"
+            },
+        ],
+        "阀块安装面": [
+            {
+                "item": "平面度",
+                "grade_range": (6, 8),
+                "reason": "阀块安装面平面度直接影响密封效果，是液压系统可靠性的关键。",
+                "standard_ref": "GB/T 1184",
+                "application": "液压集成块安装面"
+            },
+            {
+                "item": "垂直度（安装面孔对安装面）",
                 "grade_range": (7, 9),
-                "reason": "端盖孔与箱体孔的同轴度影响轴的装配"
+                "reason": "安装孔轴线对安装面的垂直度影响密封圈压缩量。",
+                "standard_ref": "GB/T 1184",
+                "application": "阀块安装孔"
+            },
+            {
+                "item": "位置度（安装孔间距）",
+                "grade_range": (7, 9),
+                "reason": "安装孔位置度误差影响阀门装配和密封效果。",
+                "standard_ref": "GB/T 1184",
+                "application": "安装孔分布"
+            },
+        ],
+        "油缸端盖": [
+            {
+                "item": "平面度",
+                "grade_range": (6, 8),
+                "reason": "端盖配合面平面度是保证密封效果的首要条件。",
+                "standard_ref": "GB/T 1184",
+                "application": "液压缸前后端盖"
+            },
+            {
+                "item": "同轴度（配合面对支承面）",
+                "grade_range": (6, 8),
+                "reason": "配合面对支承面的同轴度影响活塞杆运动对中。",
+                "standard_ref": "GB/T 1184",
+                "application": "油缸导向套孔"
+            },
+            {
+                "item": "垂直度（配合面对轴线）",
+                "grade_range": (6, 8),
+                "reason": "配合面对轴线垂直度影响密封件受力均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "端盖配合面"
+            },
+        ],
+    },
+    "通用零件": {
+        "键连接（轴/孔键槽）": [
+            {
+                "item": "对称度",
+                "grade_range": (7, 9),
+                "reason": "键槽对称度误差是最常见的键连接失效原因，会导致键和键槽早期损坏。",
+                "standard_ref": "GB/T 1184",
+                "application": "平键槽、半圆键槽、楔键槽"
+            },
+            {
+                "item": "平行度（键槽侧面对轴线）",
+                "grade_range": (7, 9),
+                "reason": "键槽侧面平行度误差影响键的装配和受力均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "与对称度同时控制"
+            },
+            {
+                "item": "位置度（花键）",
+                "grade_range": (7, 9),
+                "reason": "花键位置度误差影响花键副装配和承载均匀性。",
+                "standard_ref": "GB/T 1184",
+                "application": "矩形花键、渐开线花键"
+            },
+        ],
+        "退刀槽/砂轮越程槽": [
+            {
+                "item": "圆度",
+                "grade_range": (8, 10),
+                "reason": "退刀槽圆度误差影响磨削工艺和零件功能。",
+                "standard_ref": "GB/T 1184",
+                "application": "轴肩退刀槽、孔内退刀槽"
+            },
+            {
+                "item": "宽度尺寸（可用尺寸公差控制）",
+                "grade_range": (9, 11),
+                "reason": "退刀槽宽度影响刀具退出和磨削工艺。",
+                "standard_ref": "GB/T 1800",
+                "application": "砂轮越程槽"
+            },
+        ],
+        "倒角/圆角": [
+            {
+                "item": "圆度（圆角）",
+                "grade_range": (8, 11),
+                "reason": "圆角半径误差影响应力集中系数和装配。",
+                "standard_ref": "GB/T 1184",
+                "application": "轴肩圆角、孔口圆角"
+            },
+        ],
+        "中心孔": [
+            {
+                "item": "同轴度（中心孔对基准轴颈）",
+                "grade_range": (6, 8),
+                "reason": "中心孔同轴度误差影响工件的再加工精度和顶尖支承稳定性。",
+                "standard_ref": "GB/T 1184",
+                "application": "轴类零件中心孔"
+            },
+            {
+                "item": "位置度（多中心孔）",
+                "grade_range": (7, 9),
+                "reason": "两端中心孔位置度误差影响工件调头装夹精度。",
+                "standard_ref": "GB/T 1184",
+                "application": "长轴两端中心孔"
+            },
+        ],
+        "焊接件（机加工面）": [
+            {
+                "item": "平面度",
+                "grade_range": (8, 11),
+                "reason": "焊接件机加工面平面度受焊接变形影响。",
+                "standard_ref": "GB/T 1184",
+                "application": "焊接结构件加工面"
+            },
+            {
+                "item": "平行度",
+                "grade_range": (8, 11),
+                "reason": "焊接件平行度受焊接变形影响，需要多次校正。",
+                "standard_ref": "GB/T 1184",
+                "application": "焊接床身、焊接箱体"
+            },
+            {
+                "item": "垂直度",
+                "grade_range": (8, 11),
+                "reason": "焊接件垂直度受焊接变形影响。",
+                "standard_ref": "GB/T 1184",
+                "application": "焊接支架"
+            },
+        ],
+        "冲压件": [
+            {
+                "item": "平面度",
+                "grade_range": (8, 11),
+                "reason": "冲压件回弹变形影响平面度。",
+                "standard_ref": "GB/T 1184",
+                "application": "冲压盖板、支架"
+            },
+            {
+                "item": "位置度（孔对边缘）",
+                "grade_range": (8, 11),
+                "reason": "冲压孔位置度影响装配。",
+                "standard_ref": "GB/T 1184",
+                "application": "冲压件安装孔"
+            },
+            {
+                "item": "对称度",
+                "grade_range": (8, 11),
+                "reason": "冲压件对称度影响外观和装配。",
+                "standard_ref": "GB/T 1184",
+                "application": "对称形状冲压件"
+            },
+        ],
+        "铸件（机加工面）": [
+            {
+                "item": "平面度",
+                "grade_range": (8, 11),
+                "reason": "铸件机加工面平面度受铸造变形和夹砂影响。",
+                "standard_ref": "GB/T 1184",
+                "application": "铸造箱体面、支架面"
+            },
+            {
+                "item": "平行度",
+                "grade_range": (8, 11),
+                "reason": "铸件平行度受铸造变形影响。",
+                "standard_ref": "GB/T 1184",
+                "application": "铸造基准面"
+            },
+            {
+                "item": "同轴度（铸孔）",
+                "grade_range": (8, 11),
+                "reason": "铸造孔同轴度误差受芯子偏移影响。",
+                "standard_ref": "GB/T 1184",
+                "application": "铸造轴承孔"
             },
         ],
     },
@@ -2497,82 +3305,294 @@ def generate_gdandt_annotation_svg(item_name, tol_value_um, grade, param_value):
 
 
 def render_geometric_tolerance_tab():
-    """渲染形位公差查询选项卡"""
-    st.markdown("## 📐 形位公差推荐")
-
-    # 输入区域
-    col1, col2, col3, col4 = st.columns(4)
-    part_type = col1.selectbox("零件类型", options=["轴", "孔", "箱体", "法兰", "端盖"], index=0)
-
-    # 根据零件类型动态填充功能选项
-    if part_type in GEOMETRIC_TOLERANCE_RECOMMENDATIONS:
-        functions = list(GEOMETRIC_TOLERANCE_RECOMMENDATIONS[part_type].keys())
-    else:
-        functions = []
-    part_function = col2.selectbox("主要功能", options=functions, index=0 if functions else None)
-    precision_level = col3.selectbox("精度等级", options=["一般", "较高", "很高"], index=0)
-    param_value = col4.number_input("主参数值 (mm)", value=50.0, min_value=0.01, max_value=1000.0, step=1.0)
-
-    # 查询按钮
-    if st.button("🔍 获取形位公差推荐", type="primary", use_container_width=True):
+    """渲染形位公差推荐选项卡 - 全新友好界面"""
+    
+    # 新手提示
+    st.info("""
+    💡 **新手入门提示**：选择您的零件类型和功能部位，系统将自动推荐合适的形位公差等级。  
+    推荐结果基于 GB/T 1184-1996《形状和位置公差 未注公差值》国家标准。
+    """)
+    
+    # ==================== 输入选择区域 ====================
+    st.markdown("### 📋 零件信息选择")
+    
+    # 第一行：零件类型和功能
+    row1_col1, row1_col2 = st.columns([1, 2])
+    
+    with row1_col1:
+        # 零件类型选择（带图标）
+        part_type = st.selectbox(
+            "🏭 零件类型",
+            options=list(GEOMETRIC_TOLERANCE_RECOMMENDATIONS.keys()),
+            index=0,
+            help="选择您要设计的零件类型"
+        )
+    
+    with row1_col2:
+        # 根据零件类型动态填充功能选项
+        if part_type in GEOMETRIC_TOLERANCE_RECOMMENDATIONS:
+            functions = list(GEOMETRIC_TOLERANCE_RECOMMENDATIONS[part_type].keys())
+        else:
+            functions = []
+        part_function = st.selectbox(
+            "⚙️ 功能部位",
+            options=functions,
+            index=0 if functions else None,
+            help="选择零件的具体功能部位"
+        )
+    
+    # 第二行：精度等级和参数
+    row2_col1, row2_col2, row2_col3 = st.columns([1, 1, 1.5])
+    
+    with row2_col1:
+        precision_level = st.selectbox(
+            "🎯 精度要求",
+            options=["一般（常规机械）", "较高（精密机械）", "很高（高精度设备）"],
+            index=0,
+            help="根据设备精度要求选择"
+        )
+    
+    with row2_col2:
+        param_value = st.number_input(
+            "📏 主参数 (mm)",
+            value=50.0,
+            min_value=0.1,
+            max_value=5000.0,
+            step=1.0,
+            help="零件的主要尺寸（直径、长度等），用于查询公差值"
+        )
+    
+    with row2_col3:
+        st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
+        query_clicked = st.button(
+            "🔍 获取形位公差推荐",
+            type="primary",
+            use_container_width=True,
+            help="点击获取推荐结果"
+        )
+    
+    # ==================== 推荐结果展示 ====================
+    if query_clicked:
         if not functions:
-            st.warning(f"未找到 '{part_type}' 的推荐数据")
+            st.warning(f"⚠️ 未找到 '{part_type}' 的推荐数据")
             return
-
+        
         recommendations = GEOMETRIC_TOLERANCE_RECOMMENDATIONS[part_type].get(part_function, [])
         if not recommendations:
-            st.warning(f"未找到 '{part_type} - {part_function}' 的推荐数据")
+            st.warning(f"⚠️ 未找到 '{part_type} - {part_function}' 的推荐数据")
             return
-
-        st.markdown("### 推荐结果")
-
-        # 精度等级调整
-        grade_adjust = {"一般": 0, "较高": -1, "很高": -2}
+        
+        # 精度等级调整映射
+        grade_adjust = {"一般（常规机械）": 0, "较高（精密机械）": -1, "很高（高精度设备）": -2}
         adjust = grade_adjust.get(precision_level, 0)
-
+        
+        # 统计信息
+        st.markdown("---")
+        st.markdown(f"### 📊 推荐结果 - {part_type}：{part_function}")
+        
+        # 显示摘要信息
+        summary_col1, summary_col2, summary_col3 = st.columns(3)
+        
+        total_items = len(recommendations)
+        shape_items = len([r for r in recommendations if r.get("item") in ["圆度", "圆柱度", "直线度", "平面度"]])
+        position_items = total_items - shape_items
+        
+        summary_col1.metric("推荐项目数", f"{total_items} 项")
+        summary_col2.metric("形状公差", f"{shape_items} 项")
+        summary_col3.metric("位置公差", f"{position_items} 项")
+        
+        st.markdown("---")
+        
+        # 逐项显示推荐结果
         for idx, rec in enumerate(recommendations):
             item_name = rec["item"]
+            reason = rec.get("reason", "")
+            application = rec.get("application", "")
+            standard_ref = rec.get("standard_ref", "GB/T 1184")
             base_grade_min, base_grade_max = rec["grade_range"]
-
+            
             # 根据精度等级调整推荐等级范围
             adj_grade_min = max(1, base_grade_min + adjust)
             adj_grade_max = max(1, base_grade_max + adjust)
-
+            
             # 查询公差值（取中间等级）
             mid_grade = (adj_grade_min + adj_grade_max) // 2
             tol_value = lookup_geo_tolerance(item_name, mid_grade, param_value)
-
+            
+            # 判断公差类型
+            is_shape_tol = item_name in ["圆度", "圆柱度", "直线度", "平面度"]
+            tol_type_badge = "🔵 形状公差" if is_shape_tol else "🟠 位置公差"
+            
+            # 精度等级说明
+            grade_desc = ""
+            if adj_grade_min <= 5:
+                grade_desc = "精密级"
+            elif adj_grade_min <= 7:
+                grade_desc = "中等精度"
+            else:
+                grade_desc = "一般精度"
+            
+            # 创建卡片式布局
             with st.container():
-                col_name, col_grade, col_value, col_reason = st.columns([2, 2, 2, 4])
-
-                col_name.markdown(f"**{idx + 1}. {item_name}**")
-                col_grade.write(f"推荐等级: {adj_grade_min}~{adj_grade_max} 级")
-                if tol_value is not None:
-                    col_value.metric(f"{item_name}公差值", f"{tol_value} μm")
-                else:
-                    col_value.write("公差值: 无法查询（参数超出范围）")
-                col_reason.info(rec["reason"])
-
+                # 卡片头部
+                st.markdown(f"""
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                            padding: 12px 16px; border-radius: 8px 8px 0 0; margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: white; font-size: 18px; font-weight: bold;">
+                            {idx + 1}. {item_name}
+                        </span>
+                        <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; 
+                                   border-radius: 12px; color: white; font-size: 12px;">
+                            {tol_type_badge}
+                        </span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # 卡片主体
+                st.markdown(f"""
+                <div style="background: #f8f9fa; padding: 16px; border-radius: 0 0 8px 8px; 
+                            border: 1px solid #e0e0e0; border-top: none;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div style="background: white; padding: 12px; border-radius: 6px; 
+                                    border-left: 4px solid #667eea;">
+                            <div style="color: #666; font-size: 12px; margin-bottom: 4px;">📌 推荐等级</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #333;">
+                                {adj_grade_min} ~ {adj_grade_max} 级
+                            </div>
+                            <div style="color: #888; font-size: 11px;">{grade_desc}</div>
+                        </div>
+                        <div style="background: white; padding: 12px; border-radius: 6px; 
+                                    border-left: 4px solid #48bb78;">
+                            <div style="color: #666; font-size: 12px; margin-bottom: 4px;">📏 公差值（参考）</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #333;">
+                                {f"{tol_value}" if tol_value else "—"} μm
+                            </div>
+                            <div style="color: #888; font-size: 11px;">
+                                {f"@ {param_value}mm" if tol_value else "超出查询范围"}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: white; padding: 12px; border-radius: 6px; margin-top: 12px; 
+                                border-left: 4px solid #f6ad55;">
+                        <div style="color: #666; font-size: 12px; margin-bottom: 6px;">💡 为什么推荐？</div>
+                        <div style="color: #444; font-size: 13px; line-height: 1.5;">{reason}</div>
+                    </div>
+                    
+                    {f'''
+                    <div style="background: white; padding: 12px; border-radius: 6px; margin-top: 12px; 
+                                border-left: 4px solid #4299e1;">
+                        <div style="color: #666; font-size: 12px; margin-bottom: 6px;">🔧 典型应用</div>
+                        <div style="color: #444; font-size: 13px; line-height: 1.5;">{application}</div>
+                    </div>
+                    ''' if application else ''}
+                    
+                    <div style="background: #fff3cd; padding: 10px 12px; border-radius: 6px; margin-top: 12px;">
+                        <div style="color: #856404; font-size: 12px;">
+                            <b>📝 标注建议：</b>在零件图上标注 
+                            <b>{item_name}</b> 公差，等级选用 <b>{adj_grade_min}~{adj_grade_max}级</b>，
+                            基准标注 <b>📍 A</b>（根据具体位置确定基准要素）
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
                 # 标注示例图
                 if tol_value is not None:
                     annotation_svg = generate_gdandt_annotation_svg(
                         item_name, tol_value, mid_grade, param_value
                     )
                     st.markdown(annotation_svg, unsafe_allow_html=True)
-
-                # 标注位置和方法建议
-                st.caption(f"📌 标注建议: 在{part_type}的{part_function}处标注{item_name}，推荐等级{adj_grade_min}~{adj_grade_max}级")
-
+            
             st.markdown("---")
-
-    # 手动查询形位公差
-    with st.expander("🔧 手动查询形位公差值"):
+        
+        # 实用提示
+        st.markdown("### 💡 实用提示")
+        tips_col1, tips_col2 = st.columns(2)
+        
+        with tips_col1:
+            st.markdown("""
+            **📋 形位公差等级选用原则：**
+            
+            | 等级范围 | 应用场合 |
+            |---------|---------|
+            | 1~2级 | 精密量块、量规、精密机床主轴 |
+            | 3~4级 | 精密机床、通用机械重要部位 |
+            | 5~7级 | 一般机械的常用配合部位 |
+            | 8~9级 | 非配合尺寸、粗糙加工表面 |
+            | 10~12级 | 自由尺寸、毛坯件 |
+            """)
+        
+        with tips_col2:
+            st.markdown("""
+            **⚠️ 常见错误避免：**
+            
+            1. **基准选择错误**：位置公差必须指定基准，基准要素应是重要的定位或支撑表面
+            
+            2. **等级过高**：形位公差等级越高加工成本越大，应在满足功能的前提下选用较低的等级
+            
+            3. **忽略未注公差**：未注形位公差应按 GB/T 1184-K（中等）等级执行
+            
+            4. **与尺寸公差不协调**：形位公差通常不应大于相应尺寸公差值
+            """)
+    
+    # ==================== 知识卡片 ====================
+    st.markdown("### 📚 形位公差知识速查")
+    
+    knowledge_col1, knowledge_col2, knowledge_col3 = st.columns(3)
+    
+    with knowledge_col1:
+        with st.expander("🔵 形状公差", expanded=False):
+            st.markdown("""
+            **形状公差** 控制单一要素的形状误差，不涉及基准。
+            
+            | 项目 | 符号 | 是否需要基准 |
+            |-----|------|------------|
+            | 直线度 | — | ❌ 否 |
+            | 平面度 | ▱ | ❌ 否 |
+            | 圆度 | ○ | ❌ 否 |
+            | 圆柱度 | ⌭ | ❌ 否 |
+            """)
+    
+    with knowledge_col2:
+        with st.expander("🟠 位置公差", expanded=False):
+            st.markdown("""
+            **位置公差** 控制关联要素对基准的位置误差。
+            
+            | 项目 | 符号 | 是否需要基准 |
+            |-----|------|------------|
+            | 平行度 | ∥ | ✅ 是 |
+            | 垂直度 | ⊥ | ✅ 是 |
+            | 倾斜度 | ∠ | ✅ 是 |
+            | 同轴度 | ◎ | ✅ 是 |
+            | 对称度 | ⌢ | ✅ 是 |
+            | 位置度 | ⌖ | ✅ 是 |
+            """)
+    
+    with knowledge_col3:
+        with st.expander("🟣 跳动公差", expanded=False):
+            st.markdown("""
+            **跳动公差** 是综合公差，测量方便。
+            
+            | 项目 | 符号 | 是否需要基准 |
+            |-----|------|------------|
+            | 圆跳动 | ↗ | ✅ 是 |
+            | 全跳动 | ⇗ | ✅ 是 |
+            
+            **特点**：圆跳动可综合反映圆度、同轴度误差；测量简单，是生产中最常用的检测指标。
+            """)
+    
+    # ==================== 手动查询 ====================
+    st.markdown("---")
+    with st.expander("🔧 手动查询形位公差值", expanded=False):
         geo_col1, geo_col2, geo_col3 = st.columns(3)
         geo_item_options = ["圆度", "圆柱度", "直线度", "平面度", "平行度", "垂直度", "同轴度", "对称度", "圆跳动", "位置度"]
         selected_geo_item = geo_col1.selectbox("公差项目", options=geo_item_options)
         selected_geo_grade = geo_col2.selectbox("公差等级", options=list(range(1, 13)), index=5)
         selected_geo_param = geo_col3.number_input("主参数值 (mm)", value=50.0, min_value=0.01, max_value=1000.0, step=1.0, key="geo_param")
-
+        
         geo_tol = lookup_geo_tolerance(selected_geo_item, selected_geo_grade, selected_geo_param)
         if geo_tol is not None:
             st.success(f"**{selected_geo_item}** (等级{selected_geo_grade}, 参数{selected_geo_param}mm): **{geo_tol} μm**")

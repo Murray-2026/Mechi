@@ -4,6 +4,7 @@
 """
 
 import streamlit as st
+import pandas as pd
 
 from data.standard_data import _build_glossary, _search_glossary
 from data.tolerance_data import SIZE_RANGES, IT_VALUES

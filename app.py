@@ -1750,6 +1750,163 @@ def render_dimension_chain_tab():
 # 第8节：公差查询界面渲染函数
 # ============================================================
 
+def generate_tolerance_zone_svg(hole_info, shaft_info, nominal_size):
+    """生成公差带图的SVG - 标准GB/T格式：零线、孔公差带、轴公差带"""
+    # 所有偏差值（微米）
+    h_es = hole_info["ES"]   # 孔上偏差
+    h_ei = hole_info["EI"]   # 孔下偏差
+    s_es = shaft_info["ES"]  # 轴上偏差
+    s_ei = shaft_info["EI"]  # 轴下偏差
+
+    # 收集所有偏差值确定绘图范围
+    all_devs = [h_es, h_ei, s_es, s_ei]
+    max_dev = max(all_devs)
+    min_dev = min(all_devs)
+    
+    # 确保范围合理
+    if max_dev == min_dev:
+        max_dev = max_dev + 10
+        min_dev = min_dev - 10
+    range_margin = (max_dev - min_dev) * 0.25
+    y_max = max_dev + range_margin
+    y_min = min_dev - range_margin
+
+    # SVG 参数
+    svg_width = 420
+    svg_height = 400
+    margin_left = 80
+    margin_right = 80
+    margin_top = 35
+    margin_bottom = 50
+
+    draw_width = svg_width - margin_left - margin_right
+    draw_height = svg_height - margin_top - margin_bottom
+
+    # 偏差值到Y坐标的映射（Y轴向下为正，但偏差向上为正）
+    def dev_to_y(dev):
+        return margin_top + draw_height * (1 - (dev - y_min) / (y_max - y_min))
+
+    zero_y = dev_to_y(0)
+
+    # 颜色
+    hole_color = "#d32f2f"    # 孔 - 红色
+    shaft_color = "#1565c0"  # 轴 - 蓝色
+    zero_color = "#333"      # 零线 - 黑色
+    grid_color = "#e0e0e0"   # 网格
+
+    svg = [f'<svg width="{svg_width}" height="{svg_height}" xmlns="http://www.w3.org/2000/svg">']
+    svg.append('<style>')
+    svg.append('  text { font-family: Arial, sans-serif; }')
+    svg.append('</style>')
+
+    # ========== 背景网格线 ==========
+    # 计算合适的刻度间隔
+    dev_range = y_max - y_min
+    if dev_range <= 20:
+        tick_step = 5
+    elif dev_range <= 50:
+        tick_step = 10
+    elif dev_range <= 100:
+        tick_step = 20
+    elif dev_range <= 200:
+        tick_step = 50
+    else:
+        tick_step = 100
+
+    tick_start = int(y_min / tick_step) * tick_step
+    tick = tick_start
+    while tick <= y_max:
+        ty = dev_to_y(tick)
+        if tick != 0:
+            svg.append(f'<line x1="{margin_left}" y1="{ty}" x2="{margin_left + draw_width}" y2="{ty}" stroke="{grid_color}" stroke-width="0.5"/>')
+            svg.append(f'<text x="{margin_left - 8}" y="{ty + 4}" text-anchor="end" font-size="11" fill="#666">{tick:.0f}</text>')
+        tick += tick_step
+
+    # ========== 零线 ==========
+    svg.append(f'<line x1="{margin_left - 5}" y1="{zero_y}" x2="{margin_left + draw_width + 5}" y2="{zero_y}" stroke="{zero_color}" stroke-width="2"/>')
+    svg.append(f'<text x="{margin_left - 8}" y="{zero_y + 4}" text-anchor="end" font-size="12" font-weight="bold" fill="{zero_color}">0</text>')
+    svg.append(f'<text x="{margin_left + draw_width + 12}" y="{zero_y + 4}" font-size="11" fill="{zero_color}">零线</text>')
+
+    # ========== 孔公差带（红色矩形）==========
+    h_top_y = dev_to_y(h_es)
+    h_bot_y = dev_to_y(h_ei)
+    h_zone_height = abs(h_bot_y - h_top_y)
+    if h_zone_height < 2:
+        h_zone_height = 2
+
+    # 孔公差带矩形
+    hole_rect_x = margin_left + draw_width * 0.2
+    hole_rect_w = draw_width * 0.55
+    svg.append(f'<rect x="{hole_rect_x}" y="{min(h_top_y, h_bot_y)}" width="{hole_rect_w}" height="{h_zone_height}" fill="{hole_color}" fill-opacity="0.15" stroke="{hole_color}" stroke-width="2"/>')
+
+    # 孔公差带代号标注
+    svg.append(f'<text x="{hole_rect_x + hole_rect_w / 2}" y="{min(h_top_y, h_bot_y) - 6}" text-anchor="middle" font-size="14" font-weight="bold" fill="{hole_color}">{hole_info["designation"]}</text>')
+
+    # ES 标注线（孔上偏差）
+    svg.append(f'<line x1="{hole_rect_x - 8}" y1="{h_top_y}" x2="{hole_rect_x}" y2="{h_top_y}" stroke="{hole_color}" stroke-width="1.5"/>')
+    svg.append(f'<text x="{hole_rect_x - 12}" y="{h_top_y + 4}" text-anchor="end" font-size="11" font-weight="bold" fill="{hole_color}">ES={h_es:+.0f}</text>')
+
+    # EI 标注线（孔下偏差）
+    svg.append(f'<line x1="{hole_rect_x - 8}" y1="{h_bot_y}" x2="{hole_rect_x}" y2="{h_bot_y}" stroke="{hole_color}" stroke-width="1.5"/>')
+    svg.append(f'<text x="{hole_rect_x - 12}" y="{h_bot_y + 4}" text-anchor="end" font-size="11" font-weight="bold" fill="{hole_color}">EI={h_ei:+.0f}</text>')
+
+    # ========== 轴公差带（蓝色矩形）==========
+    s_top_y = dev_to_y(s_es)
+    s_bot_y = dev_to_y(s_ei)
+    s_zone_height = abs(s_bot_y - s_top_y)
+    if s_zone_height < 2:
+        s_zone_height = 2
+
+    # 轴公差带矩形
+    shaft_rect_x = margin_left + draw_width * 0.25
+    shaft_rect_w = draw_width * 0.45
+    svg.append(f'<rect x="{shaft_rect_x}" y="{min(s_top_y, s_bot_y)}" width="{shaft_rect_w}" height="{s_zone_height}" fill="{shaft_color}" fill-opacity="0.15" stroke="{shaft_color}" stroke-width="2"/>')
+
+    # 轴公差带代号标注
+    svg.append(f'<text x="{shaft_rect_x + shaft_rect_w / 2}" y="{max(s_top_y, s_bot_y) + 16}" text-anchor="middle" font-size="14" font-weight="bold" fill="{shaft_color}">{shaft_info["designation"]}</text>')
+
+    # es 标注线（轴上偏差）
+    svg.append(f'<line x1="{shaft_rect_x + shaft_rect_w}" y1="{s_top_y}" x2="{shaft_rect_x + shaft_rect_w + 8}" y2="{s_top_y}" stroke="{shaft_color}" stroke-width="1.5"/>')
+    svg.append(f'<text x="{shaft_rect_x + shaft_rect_w + 12}" y="{s_top_y + 4}" text-anchor="start" font-size="11" font-weight="bold" fill="{shaft_color}">es={s_es:+.0f}</text>')
+
+    # ei 标注线（轴下偏差）
+    svg.append(f'<line x1="{shaft_rect_x + shaft_rect_w}" y1="{s_bot_y}" x2="{shaft_rect_x + shaft_rect_w + 8}" y2="{s_bot_y}" stroke="{shaft_color}" stroke-width="1.5"/>')
+    svg.append(f'<text x="{shaft_rect_x + shaft_rect_w + 12}" y="{s_bot_y + 4}" text-anchor="start" font-size="11" font-weight="bold" fill="{shaft_color}">ei={s_ei:+.0f}</text>')
+
+    # ========== 配合区域标注 ==========
+    # 判断配合类型并标注间隙/过盈区域
+    if h_ei >= s_es:
+        # 间隙配合：标注最大间隙和最小间隙
+        x_max_cl_y = dev_to_y(h_es)
+        x_min_cl_y = dev_to_y(s_ei)
+        mid_cl_y = (x_max_cl_y + x_min_cl_y) / 2
+        arrow_x = margin_left + draw_width * 0.5
+        # 最大间隙标注
+        svg.append(f'<line x1="{arrow_x}" y1="{x_max_cl_y}" x2="{arrow_x}" y2="{x_min_cl_y}" stroke="#e65100" stroke-width="1" stroke-dasharray="4,3"/>')
+        svg.append(f'<polygon points="{arrow_x},{x_max_cl_y} {arrow_x-3},{x_max_cl_y+6} {arrow_x+3},{x_max_cl_y+6}" fill="#e65100"/>')
+        svg.append(f'<polygon points="{arrow_x},{x_min_cl_y} {arrow_x-3},{x_min_cl_y-6} {arrow_x+3},{x_min_cl_y-6}" fill="#e65100"/>')
+        max_cl_val = h_es - s_ei
+        svg.append(f'<text x="{arrow_x + 6}" y="{mid_cl_y + 4}" font-size="10" fill="#e65100">Xmax={max_cl_val:.0f}μm</text>')
+    elif h_es <= s_ei:
+        # 过盈配合
+        y_max_int_y = dev_to_y(s_ei)
+        y_min_int_y = dev_to_y(h_es)
+        mid_int_y = (y_max_int_y + y_min_int_y) / 2
+        arrow_x = margin_left + draw_width * 0.5
+        svg.append(f'<line x1="{arrow_x}" y1="{y_max_int_y}" x2="{arrow_x}" y2="{y_min_int_y}" stroke="#e65100" stroke-width="1" stroke-dasharray="4,3"/>')
+        svg.append(f'<polygon points="{arrow_x},{y_max_int_y} {arrow_x-3},{y_max_int_y+6} {arrow_x+3},{y_max_int_y+6}" fill="#e65100"/>')
+        svg.append(f'<polygon points="{arrow_x},{y_min_int_y} {arrow_x-3},{y_min_int_y-6} {arrow_x+3},{y_min_int_y-6}" fill="#e65100"/>')
+        max_int_val = s_ei - h_es
+        svg.append(f'<text x="{arrow_x + 6}" y="{mid_int_y + 4}" font-size="10" fill="#e65100">Ymax={max_int_val:.0f}μm</text>')
+
+    # ========== 底部信息 ==========
+    svg.append(f'<text x="{svg_width / 2}" y="{svg_height - 15}" text-anchor="middle" font-size="12" fill="#333">公称尺寸 φ{nominal_size} mm | 单位: μm</text>')
+    svg.append(f'<text x="{svg_width / 2}" y="{svg_height - 2}" text-anchor="middle" font-size="10" fill="#999">数据来源: GB/T 1800.1-2020</text>')
+
+    svg.append('</svg>')
+    return '\n'.join(svg)
+
+
 def render_tolerance_query_tab():
     """渲染公差查询选项卡"""
     st.markdown("## 🔍 公差查询")
@@ -1861,6 +2018,24 @@ def render_tolerance_query_tab():
                 st.write(f"**装配方式:** {fit_info_found['assembly']}")
 
             st.caption("数据来源: GB/T 1800.1-2020, GB/T 1801-2009")
+
+            # 公差带图
+            st.markdown("---")
+            st.markdown("#### 📊 公差带图")
+            tolerance_svg = generate_tolerance_zone_svg(hole_info, shaft_info, nominal_size)
+            col_left, col_right = st.columns([2, 3])
+            with col_left:
+                st.markdown(tolerance_svg, unsafe_allow_html=True)
+            with col_right:
+                st.caption("""
+**图例说明：**
+- 🔴 **红色矩形**：孔公差带（H系列）
+- 🔵 **蓝色矩形**：轴公差带
+- **黑色粗线**：零线（基本尺寸）
+- **左侧标注**：孔偏差 ES（上）、EI（下）
+- **右侧标注**：轴偏差 es（上）、ei（下）
+- **橙色虚线**：最大间隙/过盈
+                """)
 
             # 复制结果
             copy_text = (

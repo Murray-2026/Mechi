@@ -19,87 +19,7 @@ st.set_page_config(page_title="机械公差助手", page_icon="⚙️", layout="
 # ============================================================
 # 第2节：自定义CSS样式
 # ============================================================
-CUSTOM_CSS = """
-/* 主标题样式 - 居中显示，渐变背景 */
-.main-header {
-    text-align: center;
-    padding: 2rem 1rem;
-    background: linear-gradient(135deg, #1a237e 0%, #0d47a1 50%, #01579b 100%);
-    border-radius: 12px;
-    margin-bottom: 2rem;
-    color: white;
-}
-.main-header h1 {
-    margin: 0;
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-}
-.main-header p {
-    margin: 0.5rem 0 0 0;
-    font-size: 1.1rem;
-    opacity: 0.85;
-}
 
-/* 结果卡片样式 - 边框、圆角、内边距、阴影 */
-.result-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    background: #ffffff;
-}
-
-/* 指标数值样式 - 大号加粗文字 */
-.metric-value {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #1565c0;
-}
-
-/* 表头样式 */
-table th {
-    background-color: #1565c0 !important;
-    color: white !important;
-    font-weight: bold !important;
-    text-align: center !important;
-    padding: 10px 12px !important;
-    border: 1px solid #0d47a1 !important;
-}
-table td {
-    text-align: center !important;
-    padding: 8px 12px !important;
-    border: 1px solid #e0e0e0 !important;
-}
-table tr:nth-child(even) {
-    background-color: #f5f5f5 !important;
-}
-
-/* 公式框样式 - 等宽字体、背景色、内边距 */
-.formula-box {
-    font-family: 'Courier New', Courier, monospace;
-    background-color: #f5f5f5;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    border-left: 4px solid #1565c0;
-    margin: 1rem 0;
-    font-size: 1rem;
-    line-height: 1.6;
-    overflow-x: auto;
-}
-
-/* 免责声明样式 */
-.disclaimer {
-    font-size: 0.85rem;
-    color: #757575;
-    padding: 1rem;
-    background-color: #fff8e1;
-    border-radius: 8px;
-    border: 1px solid #ffe082;
-    margin-top: 2rem;
-}
-"""
 
 # ============================================================
 # 第3节：标准公差数据表 (GB/T 1800.1-2020)
@@ -2153,8 +2073,6 @@ def render_geometric_tolerance_tab():
 
 def main():
     """主函数：构建Streamlit应用界面"""
-    st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
-
     # 页面标题
     st.markdown("""
     <div class="main-header">

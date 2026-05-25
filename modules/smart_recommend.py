@@ -152,7 +152,7 @@ def render_smart_recommend_tab():
                 with col_a:
                     st.metric("孔公差", "ES=" + str(hole_tol["ES"]) + ", EI=" + str(hole_tol["EI"]))
                 with col_b:
-                    st.metric("轴公差", "es=" + str(shaft_tol["es"]) + ", ei=" + str(shaft_tol["ei"]))
+                    st.metric("轴公差", "es=" + str(shaft_tol["ES"]) + ", ei=" + str(shaft_tol["EI"]))
 
                 col_c, col_d = st.columns(2)
                 with col_c:

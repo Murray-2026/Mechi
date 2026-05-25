@@ -1482,6 +1482,104 @@ def lookup_geo_tolerance(item_name, grade, param_value):
 # 第7节：尺寸链计算界面渲染函数
 # ============================================================
 
+def generate_dimension_chain_svg(components):
+    """生成尺寸链示意图的SVG"""
+    if not components:
+        return ""
+    
+    # 计算总宽度（按基本尺寸比例）
+    total_size = sum(abs(c["basic_size"]) for c in components)
+    if total_size == 0:
+        total_size = 100
+    
+    # SVG 参数
+    svg_width = 800
+    svg_height = 200
+    margin_left = 50
+    margin_right = 50
+    margin_top = 60
+    margin_bottom = 60
+    
+    # 计算绘图区域
+    draw_width = svg_width - margin_left - margin_right
+    draw_height = svg_height - margin_top - margin_bottom
+    
+    # 基线Y坐标
+    base_y = margin_top + draw_height // 2
+    
+    # 生成SVG
+    svg_parts = [f'<svg width="{svg_width}" height="{svg_height}" xmlns="http://www.w3.org/2000/svg">']
+    svg_parts.append('<style>')
+    svg_parts.append('  text { font-family: Arial, sans-serif; font-size: 14px; }')
+    svg_parts.append('  .dim-line { stroke: #333; stroke-width: 2; }')
+    svg_parts.append('  .dim-arrow { stroke: #333; stroke-width: 1.5; fill: #333; }')
+    svg_parts.append('  .dim-text { fill: #1565c0; font-weight: bold; }')
+    svg_parts.append('  .axis-line { stroke: #999; stroke-width: 1; stroke-dasharray: 5,5; }')
+    svg_parts.append('  .closed-loop { stroke: #d32f2f; stroke-width: 2; }')
+    svg_parts.append('  .closed-text { fill: #d32f2f; font-weight: bold; }')
+    svg_parts.append('</style>')
+    
+    # 绘制基线
+    svg_parts.append(f'<line x1="{margin_left}" y1="{base_y}" x2="{svg_width - margin_right}" y2="{base_y}" class="axis-line"/>')
+    
+    # 绘制尺寸线和标注
+    current_x = margin_left
+    colors = ["#1565c0", "#388e3c", "#f57c00", "#7b1fa2", "#00796b", "#c62828", "#6a1b9a", "#0277bd", "#2e7d32", "#e65100"]
+    
+    for i, comp in enumerate(components):
+        # 计算尺寸宽度（按比例）
+        size_ratio = abs(comp["basic_size"]) / total_size
+        segment_width = draw_width * size_ratio
+        
+        # 颜色
+        color = colors[i % len(colors)]
+        
+        # 绘制尺寸界线（竖线）
+        line_y1 = base_y - 30
+        line_y2 = base_y + 30
+        svg_parts.append(f'<line x1="{current_x}" y1="{line_y1}" x2="{current_x}" y2="{line_y2}" class="dim-line" stroke="{color}"/>')
+        
+        # 绘制箭头（如果是增环向右，减环向左）
+        next_x = current_x + segment_width
+        if comp["ring_type"] == "增环":
+            # 增环：向右的箭头
+            svg_parts.append(f'<line x1="{current_x + 5}" y1="{base_y}" x2="{next_x - 5}" y2="{base_y}" class="dim-line" stroke="{color}"/>')
+            # 箭头
+            svg_parts.append(f'<polygon points="{next_x - 5},{base_y} {next_x - 12},{base_y - 4} {next_x - 12},{base_y + 4}" fill="{color}"/>')
+        else:
+            # 减环：向左的箭头（从右向左）
+            svg_parts.append(f'<line x1="{next_x - 5}" y1="{base_y}" x2="{current_x + 5}" y2="{base_y}" class="dim-line" stroke="{color}"/>')
+            svg_parts.append(f'<polygon points="{current_x + 5},{base_y} {current_x + 12},{base_y - 4} {current_x + 12},{base_y + 4}" fill="{color}"/>')
+        
+        # 尺寸标注文字
+        mid_x = (current_x + next_x) / 2
+        label_y = base_y - 40 if i % 2 == 0 else base_y + 50
+        svg_parts.append(f'<text x="{mid_x}" y="{label_y}" text-anchor="middle" class="dim-text" fill="{color}">{comp["name"]} ({comp["basic_size"]:.1f})</text>')
+        
+        # 环类型标注
+        type_y = base_y + 25
+        svg_parts.append(f'<text x="{mid_x}" y="{type_y}" text-anchor="middle" font-size="11" fill="{color}">{comp["ring_type"]}</text>')
+        
+        current_x = next_x
+    
+    # 绘制最后一个尺寸界线
+    svg_parts.append(f'<line x1="{current_x}" y1="{base_y - 30}" x2="{current_x}" y2="{base_y + 30}" class="dim-line" stroke="#333"/>')
+    
+    # 绘制封闭环 A0（在左侧显示间隙）
+    closed_loop_x = margin_left - 25
+    svg_parts.append(f'<line x1="{closed_loop_x}" y1="{base_y - 20}" x2="{closed_loop_x}" y2="{base_y + 20}" class="closed-loop"/>')
+    svg_parts.append(f'<line x1="{closed_loop_x}" y1="{base_y}" x2="{margin_left}" y2="{base_y}" class="closed-loop"/>')
+    svg_parts.append(f'<polygon points="{margin_left},{base_y} {margin_left - 7},{base_y - 4} {margin_left - 7},{base_y + 4}" fill="#d32f2f"/>')
+    svg_parts.append(f'<text x="{closed_loop_x - 5}" y="{base_y + 5}" text-anchor="end" class="closed-text">A₀</text>')
+    
+    # 图例
+    legend_y = svg_height - 20
+    svg_parts.append(f'<text x="{svg_width // 2}" y="{legend_y}" text-anchor="middle" font-size="12" fill="#666">尺寸链示意图 | 增环(→) 减环(←) 封闭环(A₀)</text>')
+    
+    svg_parts.append('</svg>')
+    return '\n'.join(svg_parts)
+
+
 def render_dimension_chain_tab():
     """渲染尺寸链计算选项卡"""
     st.markdown("## 📏 尺寸链计算（极值法）")
@@ -1493,6 +1591,14 @@ def render_dimension_chain_tab():
             {"name": "A2", "basic_size": 30.0, "upper_dev": 0.05, "lower_dev": -0.05, "ring_type": "减环"},
             {"name": "A3", "basic_size": 20.0, "upper_dev": 0.05, "lower_dev": -0.05, "ring_type": "增环"},
         ]
+
+    # 显示尺寸链示意图
+    st.markdown("### 尺寸链示意图")
+    svg_diagram = generate_dimension_chain_svg(st.session_state.dim_chain_components)
+    st.markdown(svg_diagram, unsafe_allow_html=True)
+    st.caption("💡 示意图说明：箭头方向表示尺寸方向，→增环（与A₀同向），←减环（与A₀反向）")
+    
+    st.markdown("---")
 
     # 显示各组成环输入行
     st.markdown("### 输入组成环")
